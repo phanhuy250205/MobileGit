@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hóa đơn - TechZone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link th:href="@{/css/form/hoadon.css}" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+
+<div class="invoice-container">
+    <div class="invoice-card">
+        <!-- Header -->
+        <div class="invoice-header">
+            <div class="brand">
+                <img src="/assets/img/logo.png" alt="TechZone Logo" class="logo">
+                <div class="brand-info">
+                    <h1>TechZone<span>.vn</span></h1>
+                    <p class="slogan">Thiên đường công nghệ</p>
+                </div>
+            </div>
+            <div class="invoice-title">
+                <h2>HÓA ĐƠN ĐIỆN TỬ</h2>
+                <div class="invoice-number" th:text="'#INV-' + ${donHang.id}"></div>
+                <div class="invoice-date" th:text="'Ngày: ' + ${#temporals.format(donHang.ngayDat, 'dd/MM/yyyy HH:mm')}"></div>
+                <div class="invoice-status">
+                    <span class="status-badge" th:text="${donHang.trangThai}"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Thông tin khách hàng -->
+        <div class="info-section">
+            <div class="customer-details">
+                <div class="section-title"><i class="bi bi-person"></i> Thông tin khách hàng</div>
+                <div class="info-content">
+                    <div class="info-item"><i class="bi bi-person-circle"></i>
+                        <div><label>Họ tên</label><p th:text="${donHang.nhanVien.tenNhanVien}"></p></div>
+                    </div>
+                    <div class="info-item"><i class="bi bi-telephone"></i>
+                        <div><label>Số điện thoại</label><p th:text="${donHang.nhanVien.soDienThoai}"></p></div>
+                    </div>
+                    <div class="info-item"><i class="bi bi-geo-alt"></i>
+                        <div><label>Địa chỉ</label><p th:text="${donHang.nhanVien.diaChi}"></p></div>
+                    </div>
+                    <div class="info-item"><i class="bi bi-envelope"></i>
+                        <div><label>Email</label><p th:text="${donHang.nhanVien.email}"></p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chi tiết đơn hàng -->
+        <div class="products-section">
+            <div class="section-title"><i class="bi bi-cart3"></i> Chi tiết đơn hàng</div>
+            <div class="products-table">
+                <div th:each="item : ${cartItems}" class="product-item">
+                    <div class="product-info">
+                        <h4 th:text="${item.sanPham.tensanpham}"></h4>
+                        <p th:text="'Mô tả: ' + ${item.sanPham.mota}"></p>
+                        <div class="product-meta">
+                            <span class="quantity">x <span th:text="${item.soLuong}"></span></span>
+                            <span class="price" th:text="${#numbers.formatDecimal(item.gia, 0, 'COMMA', 0, 'POINT')} + '₫'"></span>
+                        </div>
+                    </div>
+                    <div class="product-total" th:text="${#numbers.formatDecimal(item.gia.multiply(item.soLuong), 0, 'COMMA', 0, 'POINT')} + '₫'"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tổng kết -->
+        <div class="summary-section">
+            <div class="summary-content">
+                <div class="summary-item"><span>Tạm tính</span>
+                    <span th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')} + '₫'"></span>
+                </div>
+                <div class="summary-item"><span>Phí vận chuyển</span><span>Miễn phí</span></div>
+                <div class="summary-item discount"><span>Giảm giá</span><span>-2.000.000₫</span></div>
+                <div class="summary-item total"><span>Tổng cộng</span>
+                    <span th:text="${#numbers.formatDecimal(totalAmount.subtract(new java.math.BigDecimal(2000000)), 0, 'COMMA', 0, 'POINT')} + '₫'"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="invoice-footer">
+            <div class="footer-content">
+                <p class="thank-you">Cảm ơn quý khách đã mua hàng tại TechZone!</p>
+            </div>
+        </div>
+
+        <!-- Nút Xác Nhận Đơn Hàng -->
+        <form id="confirmForm">
+            <input type="hidden" name="donHangId" th:value="${donHang.id}" />
+            <button type="button" class="btn btn-success w-100 mt-3" onclick="confirmOrder()">Xác nhận đơn hàng</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function confirmOrder() {
+        let donHangId = document.querySelector('input[name="donHangId"]').value;
+
+        fetch('/invoice/confirm', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ donHangId: donHangId })
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    Swal.fire({
+                        title: "🎉 Thành công!",
+                        text: data.message,
+                        icon: "success",
+                        showCancelButton: true,
+                        confirmButtonText: "Xuất hóa đơn",
+                        cancelButtonText: "Về trang chủ"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = "/invoice/pdf?hoadonId=" + data.hoadonId;
+                        } else {
+                            window.location.href = "/api/index/";
+                        }
+                    });
+                } else {
+                    Swal.fire("Lỗi", data.message, "error");
+                }
+            })
+            .catch(error => console.error("Error:", error));
+    }
+</script>
+
+</body>
+</html>

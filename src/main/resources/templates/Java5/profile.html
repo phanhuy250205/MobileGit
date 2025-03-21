@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - TechZone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/css/form/profile.css">
+</head>
+<style>
+    .avatar {
+        width: 150px; /* Đặt kích thước ảnh */
+        height: 150px; /* Đảm bảo ảnh vuông trước khi bo tròn */
+        border-radius: 50%; /* Làm ảnh thành hình tròn */
+        object-fit: cover; /* Cắt ảnh để giữ khung hình đẹp */
+        border: 3px solid #ddd; /* Viền ảnh (tuỳ chỉnh màu sắc) */
+        display: block;
+        margin: 0 auto; /* Căn giữa ảnh */
+    }
+
+</style>
+<body>
+<div class="container">
+    <div class="row justify-content-center py-5">
+        <div class="col-md-8">
+            <div class="card shadow-lg border-0">
+                <div class="card-body p-5">
+                    <div class="text-center mb-4">
+                        <div class="avatar-wrapper mb-3">
+                            <!-- Nếu có avatar, hiển thị ảnh -->
+                            <img th:if="${updatedUser.avatar != null and updatedUser.avatar != ''}"
+                                 th:src="@{${updatedUser.avatar}}"
+                                 alt="Avatar" class="avatar">
+                            <!-- Nếu không có avatar, hiển thị ảnh mặc định -->
+                            <img th:if="${updatedUser.avatar == null or updatedUser.avatar == ''}"
+                                 th:src="@{/uploads/default-avatar.png}"
+                                 alt="Avatar" class="avatar">
+                            <div class="avatar-edit">
+                                <label for="avatar-upload" class="edit-icon">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                                <input type="file" id="avatar-upload" class="d-none">
+                            </div>
+                        </div>
+                        <h2 class="fw-bold">Thông tin cá nhân</h2>
+                        <p class="text-muted">Cập nhật thông tin của bạn</p>
+                    </div>
+
+                    <form th:action="@{/user/update}" method="post" enctype="multipart/form-data">
+                        <!-- 🛠️ Thêm input ẩn để gửi ID của user -->
+                        <input type="hidden" name="id" th:value="${updatedUser != null ? updatedUser.id : ''}">
+
+                        <div class="row">
+                            <!-- Họ và tên -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Họ và tên</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-user"></i>
+                                    </span>
+                                    <input type="text" class="form-control" name="tenNhanVien"
+                                           th:value="${updatedUser != null ? updatedUser.tenNhanVien : ''}" required>
+                                </div>
+                            </div>
+
+                            <!-- Email -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Email</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-envelope"></i>
+                                    </span>
+                                    <input type="email" class="form-control" name="email"
+                                           th:value="${updatedUser != null ? updatedUser.email : ''}" required>
+                                </div>
+                            </div>
+
+                            <!-- Số điện thoại -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Số điện thoại</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-phone"></i>
+                                    </span>
+                                    <input type="tel" class="form-control" name="soDienThoai"
+                                           th:value="${updatedUser != null ? updatedUser.soDienThoai : ''}" required>
+                                </div>
+                            </div>
+
+                            <!-- Ngày sinh (bỏ comment nếu cần) -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Ngày sinh</label>
+                                <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-calendar"></i>
+                                </span>
+                                    <input type="date" class="form-control" name="ngaysinh"
+                                           th:value="${updatedUser != null && updatedUser.ngaysinh != null ? updatedUser.ngaysinh : ''}">
+                                </div>
+                            </div>
+
+                            <!-- Địa chỉ -->
+                            <div class="col-12 mb-4">
+                                <label class="form-label">Địa chỉ</label>
+                                <div class="input-group">
+                                <span class="input-group-text bg-light">
+                                    <i class="fas fa-location-dot"></i>
+                                </span>
+                                    <input type="text" class="form-control" name="diaChi"
+                                           th:value="${updatedUser != null ? updatedUser.diaChi : ''}" required>
+                                </div>
+                            </div>
+
+                            <!-- Mật khẩu mới -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Mật khẩu mới</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control" name="newPassword"
+                                           placeholder="Nhập mật khẩu mới">
+                                </div>
+                            </div>
+
+                            <!-- Xác nhận mật khẩu -->
+                            <div class="col-md-6 mb-4">
+                                <label class="form-label">Xác nhận mật khẩu</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-lock"></i>
+                                    </span>
+                                    <input type="password" class="form-control" name="confirmPassword"
+                                           placeholder="Xác nhận mật khẩu mới">
+                                </div>
+                            </div>
+
+                            <!-- Avatar -->
+                            <div class="col-12 mb-4">
+                                <label class="form-label">Ảnh đại diện</label>
+                                <input type="file" class="form-control" name="avatarFile" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-3">
+                            <button type="button" class="btn btn-outline-secondary">Hủy</button>
+                            <button type="submit" class="btn btn-primary">Lưu thay đổi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById("avatarInput").addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                document.getElementById("avatarPreview").src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

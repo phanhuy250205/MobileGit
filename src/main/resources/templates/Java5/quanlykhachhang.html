@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý khách hàng - TechZone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .stat-card {
+            transition: transform 0.2s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+        }
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        .status-badge.active {
+            background: #e8f5e9; /* Màu nền xanh nhạt */
+            color: #2e7d32; /* Màu chữ xanh đậm */
+        }
+
+        .status-badge.locked {
+            background: #fce4ec; /* Màu nền hồng nhạt */
+            color: #c2185b; /* Màu chữ đỏ đậm */
+        }
+
+    </style>
+</head>
+<body class="bg-light">
+<div class="container-fluid py-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="mb-0">Quản lý khách hàng</h4>
+        <div class="d-flex gap-3">
+            <div class="position-relative">
+                <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+                <input type="text"  id="searchInput" class="form-control ps-5" placeholder="Tìm kiếm khách hàng...">
+            </div>
+            <select  id="statusFilter" class="form-select" style="width: 200px;">
+                <option  value="all">Tất cả trạng thái</option>
+                <option value="Hoạt động">Đang hoạt động</option>
+                <option value="Đã khóa">Đã khóa</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-3 p-3 bg-primary bg-opacity-10 me-3">
+                        <i class="bi bi-people-fill text-primary fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Tổng khách hàng</h6>
+                        <h4 class="mb-0" th:text="${tongKhachHang}"></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-3 p-3 bg-success bg-opacity-10 me-3">
+                        <i class="bi bi-person-check-fill text-success fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Đang hoạt động</h6>
+                        <h4 class="mb-0" th:text="${dangHoatDong}"></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm stat-card">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-3 p-3 bg-danger bg-opacity-10 me-3">
+                        <i class="bi bi-person-lock text-danger fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Đã khóa</h6>
+                        <h4 class="mb-0" th:text="${daKhoa}"></h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Table -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Khách hàng</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Đơn hàng</th>
+                        <th>Tổng chi tiêu</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="khach : ${danhSachKhachHang}" th:data-user-id="${khach.maKhachHang}">
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <img src="https://i.pravatar.cc/150?img=1" class="avatar rounded-circle me-3">
+                                <div>
+                                    <div class="fw-medium" th:text="${khach.tenKhachHang}"></div>
+                                    <small class="text-muted" th:text="'#' + ${khach.maKhachHang}"></small>
+                                </div>
+                            </div>
+                        </td>
+                        <td th:text="${khach.email}"></td>
+                        <td th:text="${khach.soDienThoai}"></td>
+                        <td th:text="${khach.soDonHang} + ' đơn'"></td>
+                        <td th:text="${khach.tongChiTieu} + ' VNĐ'"></td>
+                        <td>
+                            <span th:class="${khach.trangThai == 'Hoạt động' ? 'status-badge active' : 'status-badge locked'}"
+                                  th:text="${khach.trangThai != null ? khach.trangThai : 'Không xác định'}">
+                            </span>
+                        </td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-light btn-sm" data-bs-toggle="dropdown">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li>
+                                        <a class="dropdown-item view-details" href="#" data-bs-toggle="modal"
+                                           data-bs-target="#customerDetailsModal" th:data-user-id="${khach.maKhachHang}">
+                                            <i class="bi bi-eye me-2"></i> Xem chi tiết
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item toggle-account-status"
+                                           th:classappend="${khach.trangThai == 'Hoạt động'} ? 'text-danger' : 'text-success'"
+                                           th:data-user-id="${khach.maKhachHang}"
+                                           th:data-new-status="${khach.trangThai == 'Hoạt động' ? 'Đã khóa' : 'Hoạt động'}">
+                                            <i class="bi" th:classappend="${khach.trangThai == 'Hoạt động' ? 'bi-lock-fill' : 'bi-unlock-fill'}"></i>
+                                            <span th:text="${khach.trangThai == 'Hoạt động' ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}"></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Chi tiết -->
+<div class="modal fade" id="customerDetailsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header border-0">
+                <h5 class="modal-title">Chi tiết khách hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Profile Header -->
+                <div class="d-flex align-items-center mb-4">
+                    <img src="https://i.pravatar.cc/150?img=1"
+                         class="rounded-circle me-3"
+                         width="80" height="80">
+                    <div>
+                        <h5 id="customerName" class="mb-1"></h5>
+                    </div>
+                </div>
+
+                <!-- Info Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-3 p-2 bg-white me-3">
+                                    <i class="bi bi-envelope text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Email</small>
+                                    <span id="customerEmail"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-light border-0">
+                            <div class="card-body d-flex align-items-center">
+                                <div class="rounded-3 p-2 bg-white me-3">
+                                    <i class="bi bi-telephone text-primary"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Số điện thoại</small>
+                                    <span id="customerPhone"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="card bg-primary bg-opacity-10 border-0">
+                            <div class="card-body text-center">
+                                <h6 class="text-primary mb-2">Tổng đơn hàng</h6>
+                                <h3 id="customerTotalOrders" class="mb-0"></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-success bg-opacity-10 border-0">
+                            <div class="card-body text-center">
+                                <h6 class="text-success mb-2">Tổng chi tiêu</h6>
+                                <h3 id="customerTotalSpent" class="mb-0"></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+
+        document.getElementById('searchInput').addEventListener('input', function (e) {
+            const searchTerm = e.target.value.toLowerCase();
+            document.querySelectorAll('tbody tr').forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Lọc trạng thái
+        document.getElementById('statusFilter').addEventListener('change', function (e) {
+            const status = e.target.value;
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const statusBadge = row.querySelector('.status-badge');
+                row.style.display = (status === 'all' || statusBadge.textContent === status) ? '' : 'none';
+            });
+        });
+
+        document.querySelectorAll('.toggle-account-status').forEach(button => {
+            button.addEventListener('click', function (event) {
+                event.preventDefault();
+
+                const userId = this.dataset.userId;
+                const newStatus = this.dataset.newStatus;
+
+                if (confirm(`Bạn có chắc muốn ${newStatus.toLowerCase()} tài khoản này?`)) {
+                    fetch(`/admin/khachhang/update-status?id=${userId}&trangThai=${newStatus}`, {
+                        method: 'POST'
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.trangThai) {
+                                console.log(`✅ Cập nhật trạng thái thành công: ${data.trangThai}`);
+
+                                // Cập nhật giao diện ngay lập tức
+                                const row = document.querySelector(`tr[data-user-id="${userId}"]`);
+                                const statusBadge = row.querySelector('.status-badge');
+                                const actionButton = row.querySelector('.toggle-account-status');
+
+                                // Thay đổi trạng thái hiển thị
+                                statusBadge.textContent = data.trangThai;
+                                if (data.trangThai === "Hoạt động") {
+                                    statusBadge.className = "status-badge active";
+                                    actionButton.textContent = "Khóa tài khoản";
+                                    actionButton.className = "dropdown-item toggle-account-status text-danger";
+                                    actionButton.dataset.newStatus = "Đã khóa";
+                                } else {
+                                    statusBadge.className = "status-badge locked";
+                                    actionButton.textContent = "Mở khóa tài khoản";
+                                    actionButton.className = "dropdown-item toggle-account-status text-success";
+                                    actionButton.dataset.newStatus = "Hoạt động";
+                                }
+
+                                alert(`✅ Trạng thái đã được cập nhật thành công!`);
+                            } else {
+                                alert("⚠️ Có lỗi xảy ra khi cập nhật trạng thái!");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("❌ Lỗi:", error);
+                            alert("❌ Có lỗi xảy ra khi cập nhật trạng thái!");
+                        });
+                }
+            });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.view-details').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.dataset.userId; // Lấy ID khách hàng từ thuộc tính data-user-id
+
+                fetch(`/admin/khachhang/${userId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Không tìm thấy khách hàng!");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Đổ dữ liệu vào modal
+                        document.getElementById('customerName').textContent = data.tenKhachHang;
+                        document.getElementById('customerEmail').textContent = data.email;
+                        document.getElementById('customerPhone').textContent = data.soDienThoai;
+                        document.getElementById('customerTotalOrders').textContent = data.soDonHang + " đơn";
+                        document.getElementById('customerTotalSpent').textContent = data.tongChiTieu + " VNĐ";
+                        document.getElementById('accountStatus').textContent = data.trangThai;
+
+                        // Cập nhật trạng thái tài khoản
+                        if (data.trangThai === "Hoạt động") {
+                            document.getElementById('accountStatus').className = "status-badge active";
+                            document.getElementById('toggleAccountBtn').className = "btn btn-danger btn-sm";
+                            document.getElementById('toggleAccountBtn').innerHTML = '<i class="bi bi-lock-fill me-2"></i> Khóa tài khoản';
+                        } else {
+                            document.getElementById('accountStatus').className = "status-badge locked";
+                            document.getElementById('toggleAccountBtn').className = "btn btn-success btn-sm";
+                            document.getElementById('toggleAccountBtn').innerHTML = '<i class="bi bi-unlock-fill me-2"></i> Mở khóa tài khoản';
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Lỗi:", error);
+                    });
+            });
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('.view-details').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.dataset.userId; // Lấy ID khách hàng từ thuộc tính data-user-id
+
+                // Gửi AJAX request để lấy thông tin chi tiết khách hàng
+                fetch(`/admin/khachhang/${userId}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Không tìm thấy khách hàng!");
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        // Cập nhật dữ liệu vào modal
+                        document.getElementById('customerName').textContent = data.tenKhachHang || 'Không có dữ liệu';
+                        document.getElementById('customerEmail').textContent = data.email || 'Không có dữ liệu';
+                        document.getElementById('customerPhone').textContent = data.soDienThoai || 'Không có dữ liệu';
+                        document.getElementById('customerTotalOrders').textContent = data.soDonHang + " đơn" || '0 đơn';
+                        document.getElementById('customerTotalSpent').textContent = data.tongChiTieu + " VNĐ" || '0 VNĐ';
+                        document.getElementById('accountStatus').textContent = data.trangThai || 'Không xác định';
+
+                        // Cập nhật trạng thái tài khoản
+                        if (data.trangThai === "Hoạt động") {
+                            document.getElementById('accountStatus').className = "status-badge active";
+                            document.getElementById('toggleAccountBtn').className = "btn btn-danger btn-sm";
+                            document.getElementById('toggleAccountBtn').innerHTML = '<i class="bi bi-lock-fill me-2"></i> Khóa tài khoản';
+                            document.getElementById('toggleAccountBtn').dataset.userId = userId;
+                            document.getElementById('toggleAccountBtn').dataset.newStatus = "Đã khóa";
+                        } else {
+                            document.getElementById('accountStatus').className = "status-badge locked";
+                            document.getElementById('toggleAccountBtn').className = "btn btn-success btn-sm";
+                            document.getElementById('toggleAccountBtn').innerHTML = '<i class="bi bi-unlock-fill me-2"></i> Mở khóa tài khoản';
+                            document.getElementById('toggleAccountBtn').dataset.userId = userId;
+                            document.getElementById('toggleAccountBtn').dataset.newStatus = "Hoạt động";
+                        }
+                    })
+                    .catch(error => {
+                        console.error("Lỗi:", error);
+                    });
+            });
+        });
+    });
+
+</script>
+</body>
+</html>

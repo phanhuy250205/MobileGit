@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechZone - Cửa hàng công nghệ cao cấp</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" crossorigin href="/assets/index-Bi-aqqxs.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light sticky-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                TechZone
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Trang chủ</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            Danh mục
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/category/laptop">Laptop</a></li>
+                            <li><a class="dropdown-item" href="/category/smartphone">Điện thoại</a></li>
+                            <li><a class="dropdown-item" href="/category/tablet">Máy tính bảng</a></li>
+                            <li><a class="dropdown-item" href="/category/accessories">Phụ kiện</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/promotion">Khuyến mãi</a>
+                    </li>
+                </ul>
+                <form class="search-form me-3">
+                    <input type="search" class="form-control" placeholder="Tìm kiếm sản phẩm...">
+                    <button type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+                <div class="d-flex align-items-center">
+                    <a href="/cart" class="btn btn-outline-primary position-relative me-2">
+                        <i class="bi bi-cart3"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge bg-danger">
+                            0
+                        </span>
+                    </a>
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                            <i class="bi bi-person"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item" href="/login">Đăng nhập</a></li>
+                            <li><a class="dropdown-item" href="/register">Đăng ký</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="hero-section text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1>Khám Phá Công Nghệ Mới</h1>
+                    <p class="lead">Trải nghiệm những sản phẩm công nghệ hàng đầu với giá ưu đãi cùng dịch vụ hậu mãi tốt nhất</p>
+                    <a href="/products" class="btn btn-light btn-lg">
+                        Khám phá ngay
+                        <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                </div>
+                <div class="col-lg-6">
+                    <img src="https://via.placeholder.com/600x400" alt="Tech devices" class="img-fluid rounded-3 shadow">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Featured Products -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5 fw-bold">Sản Phẩm Nổi Bật</h2>
+            <div class="row g-4">
+                <!-- Product Card 1 -->
+                <div class="col-md-3">
+                    <div class="card h-100">
+                        <img src="https://via.placeholder.com/300" class="card-img-top" alt="iPhone 15 Pro Max">
+                        <div class="card-body">
+                            <h5 class="card-title">iPhone 15 Pro Max</h5>
+                            <p class="card-text">256GB, Titan Tự Nhiên</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="price">34.990.000₫</span>
+                                <button class="btn btn-primary">
+                                    <i class="bi bi-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product Card 2 -->
+                <div class="col-md-3">
+                    <div class="card h-100">
+                        <img src="https://via.placeholder.com/300" class="card-img-top" alt="MacBook Pro">
+                        <div class="card-body">
+                            <h5 class="card-title">MacBook Pro M3</h5>
+                            <p class="card-text">14-inch, 512GB SSD</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="price">45.990.000₫</span>
+                                <button class="btn btn-primary">
+                                    <i class="bi bi-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 3 -->
+                <div class="col-md-3">
+                    <div class="card h-100">
+                        <img src="https://via.placeholder.com/300" class="card-img-top" alt="iPad Pro">
+                        <div class="card-body">
+                            <h5 class="card-title">iPad Pro M2</h5>
+                            <p class="card-text">11-inch, WiFi, 128GB</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="price">23.990.000₫</span>
+                                <button class="btn btn-primary">
+                                    <i class="bi bi-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Card 4 -->
+                <div class="col-md-3">
+                    <div class="card h-100">
+                        <img src="https://via.placeholder.com/300" class="card-img-top" alt="AirPods Pro">
+                        <div class="card-body">
+                            <h5 class="card-title">AirPods Pro 2</h5>
+                            <p class="card-text">Sạc không dây, Type-C</p>
+                            <div class="d-flex justify-content-between align-items-center mt-3">
+                                <span class="price">6.990.000₫</span>
+                                <button class="btn btn-primary">
+                                    <i class="bi bi-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5 fw-bold">Danh Mục Sản Phẩm</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="category-card">
+                        <i class="bi bi-laptop"></i>
+                        <h5 class="mt-3">Laptop</h5>
+                        <p class="text-muted">Laptop gaming, văn phòng</p>
+                        <a href="/category/laptop" class="btn btn-outline-primary mt-2">Xem thêm</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="category-card">
+                        <i class="bi bi-phone"></i>
+                        <h5 class="mt-3">Điện thoại</h5>
+                        <p class="text-muted">iPhone, Samsung, Xiaomi</p>
+                        <a href="/category/smartphone" class="btn btn-outline-primary mt-2">Xem thêm</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="category-card">
+                        <i class="bi bi-tablet"></i>
+                        <h5 class="mt-3">Máy tính bảng</h5>
+                        <p class="text-muted">iPad, Galaxy Tab</p>
+                        <a href="/category/tablet" class="btn btn-outline-primary mt-2">Xem thêm</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="category-card">
+                        <i class="bi bi-headphones"></i>
+                        <h5 class="mt-3">Phụ kiện</h5>
+                        <p class="text-muted">Tai nghe, sạc, ốp lưng</p>
+                        <a href="/category/accessories" class="btn btn-outline-primary mt-2">Xem thêm</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h5>Về TechZone</h5>
+                    <p>Cung cấp các sản phẩm công nghệ chính hãng với giá tốt nhất thị trường. Dịch vụ chăm sóc khách hàng tận tâm.</p>
+                </div>
+                <div class="col-lg-4 mb-4">
+                    <h5>Liên kết nhanh</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="/about">Về chúng tôi</a></li>
+                        <li><a href="/contact">Liên hệ</a></li>
+                        <li><a href="/policy">Chính sách bảo hành</a></li>
+                        <li><a href="/shipping">Chính sách vận chuyển</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h5>Thông tin liên hệ</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-geo-alt"></i> 123 Đường ABC, Quận 1, TP.HCM</li>
+                        <li><i class="bi bi-telephone"></i> 1900 1234</li>
+                        <li><i class="bi bi-envelope"></i> contact@techzone.com</li>
+                        <li><i class="bi bi-clock"></i> 8:00 - 21:00 (Thứ 2 - Chủ nhật)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

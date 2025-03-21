@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý sản phẩm - TechZone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../static/css/form/uploadoder.css">
+</head>
+<body>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-0">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h2 class="fw-bold m-0">Quản lý sản phẩm</h2>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProductModal">
+                            <i class="fas fa-plus me-2"></i>Thêm sản phẩm mới
+                        </button>
+                    </div>
+
+                    <!-- Bảng sản phẩm -->
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Hình ảnh</th>
+                                <th>Tên sản phẩm</th>
+                                <th>Danh mục</th>
+                                <th>Giá</th>
+                                <th>Kho</th>
+                                <th>Trạng thái</th>
+                                <th>Thương Hiệu</th>
+                                <th>Model</th>
+                                <th>Thao tác</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="sanPham : ${sanPhams}">
+                                <td th:text="'#' + ${sanPham.id}"></td>
+                                <td>
+                                    <img th:src="@{${sanPham.anhDauTien}}" alt="Ảnh sản phẩm" width="30%">
+                                </td>
+                                <td th:text="${sanPham.tensanpham}"></td>
+                                <td th:text="${sanPham.phanLoaiHang.tenPhanLoai}"></td>
+                                <td th:text="${#numbers.formatDecimal(sanPham.gia, 0, 'COMMA', 0, 'POINT')} + '₫'"></td>
+                                <td th:text="${sanPham.soLuong}"></td>
+                                <td><span th:classappend="${sanPham.trangThai == 'Còn hàng' ? 'badge bg-success' : (sanPham.trangThai == 'Hết hàng' ? 'badge bg-danger' : 'badge bg-secondary')}" th:text="${sanPham.trangThai}"></span>
+                                <td th:text="${sanPham.thuongHieu}"></td>
+                                <td th:text="${sanPham.model}"></td>
+                                </td></td>
+                                <td>
+                                    <div class="btn-group">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProductModal"
+                                                th:data-id="${sanPham.id}"
+                                                th:data-tensanpham="${sanPham.tensanpham}"
+                                                th:data-gia="${sanPham.gia}"
+                                                th:data-soLuong="${sanPham.soLuong}"
+                                                th:data-trangthai="${sanPham.trangThai}"
+                                                th:data-cauhinh="${sanPham.cauHinh}"
+                                                th:data-mota="${sanPham.mota}"
+                                                th:data-thuonghieu="${sanPham.thuongHieu}"
+                                        th:data-model="${sanPham.model}"
+                                        th:data-danhmuc="${sanPham.phanLoaiHang.id}">
+                                        <i class="fas fa-edit"></i>
+                                        </button>
+
+                                        <!-- Nút xóa sản phẩm -->
+                                        <a th:href="@{/api/sanpham/delete/{id}(id=${sanPham.id})}" class="btn btn-sm btn-outline-danger"
+                                           onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Thêm sản phẩm -->
+<div class="modal fade" id="addProductModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Thêm sản phẩm mới</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm" method="POST" action="/api/sanpham/create" enctype="multipart/form-data">
+                    <div class="row g-3">
+                        <!-- Tên sản phẩm -->
+                        <div class="col-md-6">
+                            <label class="form-label">Tên sản phẩm</label>
+                            <input type="text" class="form-control" name="tensanpham" required>
+                        </div>
+
+                        <!-- Danh mục -->
+                        <div class="col-md-6">
+                            <label class="form-label">Danh mục</label>
+                            <select class="form-select" name="phanLoaiId" required>
+                                <option value="">-- Chọn danh mục --</option>
+                                <option th:each="danhMuc : ${danhMucList}"
+                                        th:value="${danhMuc.id}"
+                                        th:text="${danhMuc.tenPhanLoai}"
+                                        th:selected="${sanPham != null && sanPham.phanLoaiHang != null && sanPham.phanLoaiHang.id == danhMuc.id}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Giá bán -->
+                        <div class="col-md-6">
+                            <label class="form-label">Giá bán</label>
+                            <input type="number" class="form-control" name="gia" required>
+                        </div>
+
+                        <!-- Số lượng kho -->
+                        <div class="col-md-6">
+                            <label class="form-label">Số lượng kho</label>
+                            <input type="number" class="form-control" name="soLuong" required>
+                        </div>
+
+                        <!-- Thương hiệu -->
+                        <div class="col-md-6">
+                            <label class="form-label">Thương hiệu</label>
+                            <input type="text" class="form-control" name="thuongHieu" required>
+                        </div>
+
+                        <!-- Model -->
+                        <div class="col-md-6">
+                            <label class="form-label">Model</label>
+                            <input type="text" class="form-control" name="model" required>
+                        </div>
+
+                        <!-- Trạng thái -->
+                        <div class="col-md-6">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-select" name="trangThai">
+                                <option>Còn hàng</option>
+                                <option>Hết hàng</option>
+                                <option>Ngừng kinh doanh</option>
+                            </select>
+                        </div>
+
+                        <!-- Cấu hình -->
+                        <div class="col-12">
+                            <label class="form-label">Cấu hình sản phẩm</label>
+                            <textarea class="form-control" name="cauHinh" rows="3" placeholder="Nhập cấu hình sản phẩm..." required></textarea>
+                        </div>
+
+                        <!-- Mô tả ngắn -->
+                        <div class="col-12">
+                            <label class="form-label">Mô tả ngắn</label>
+                            <textarea class="form-control" name="mota" rows="3"></textarea>
+                        </div>
+
+                        <!-- Hình ảnh sản phẩm -->
+                        <div class="col-12">
+                            <label class="form-label">Hình ảnh sản phẩm</label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Ảnh chính</label>
+                                    <input type="file" name="files" accept="image/*" class="form-control" id="mainImage">
+                                    <img id="mainImagePreview" class="image-preview mt-2 d-none" width="150">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ảnh mặt trước</label>
+                                    <input type="file" name="files" accept="image/*" class="form-control" id="frontImage">
+                                    <img id="frontImagePreview" class="image-preview mt-2 d-none" width="150">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ảnh mặt sau</label>
+                                    <input type="file" name="files" accept="image/*" class="form-control" id="backImage">
+                                    <img id="backImagePreview" class="image-preview mt-2 d-none" width="150">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ảnh chi tiết</label>
+                                    <input type="file" name="files" accept="image/*" class="form-control" id="detailImage">
+                                    <img id="detailImagePreview" class="image-preview mt-2 d-none" width="150">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="submit" class="btn btn-primary" form="addProductForm">Lưu sản phẩm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal Sửa sản phẩm -->
+<div class="modal fade" id="editProductModal" tabindex="-1" aria-labelledby="editProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold" id="editProductModalLabel">Sửa sản phẩm</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm" method="POST" action="/api/sanpham/update" enctype="multipart/form-data">
+                    <input type="hidden" name="id" id="productId"/>
+
+                    <div class="row g-3">
+                        <!-- Tên sản phẩm -->
+                        <div class="col-md-6">
+                            <label class="form-label">Tên sản phẩm</label>
+                            <input type="text" class="form-control" name="tensanpham" id="tensanpham" required>
+                        </div>
+
+                        <!-- Danh mục -->
+                        <div class="col-md-6">
+                            <label class="form-label">Danh mục</label>
+                            <select class="form-select" name="phanLoaiId" id="phanLoaiId" required>
+                                <option value="">-- Chọn danh mục --</option>
+                                <option th:each="danhMuc : ${danhMucList}" th:value="${danhMuc.id}" th:text="${danhMuc.tenPhanLoai}"></option>
+                            </select>
+                        </div>
+
+                        <!-- Giá bán -->
+                        <div class="col-md-6">
+                            <label class="form-label">Giá bán</label>
+                            <input type="number" class="form-control" name="gia" id="gia" required>
+                        </div>
+
+                        <!-- Số lượng kho -->
+                        <div class="col-md-6">
+                            <label class="form-label">Số lượng kho</label>
+                            <input type="number" class="form-control" name="soLuong" id="soLuong" required>
+                        </div>
+
+                        <!-- Thương hiệu -->
+                        <div class="col-md-6">
+                            <label class="form-label">Thương hiệu</label>
+                            <input type="text" class="form-control" name="thuongHieu" id="thuongHieu" required>
+                        </div>
+
+                        <!-- Model -->
+                        <div class="col-md-6">
+                            <label class="form-label">Model</label>
+                            <input type="text" class="form-control" name="model" id="model" required>
+                        </div>
+
+                        <!-- Trạng thái -->
+                        <div class="col-md-6">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-select" name="trangThai" id="trangThai" required>
+                                <option value="Còn hàng">Còn hàng</option>
+                                <option value="Hết hàng">Hết hàng</option>
+                                <option value="Ngừng kinh doanh">Ngừng kinh doanh</option>
+                            </select>
+                        </div>
+
+                        <!-- Cấu hình -->
+                        <div class="col-12">
+                            <label class="form-label">Cấu hình sản phẩm</label>
+                            <textarea class="form-control" name="cauHinh" id="cauHinh" rows="3" required></textarea>
+                        </div>
+
+                        <!-- Mô tả ngắn -->
+                        <div class="col-12">
+                            <label class="form-label">Mô tả ngắn</label>
+                            <textarea class="form-control" name="mota" id="mota" rows="3"></textarea>
+                        </div>
+
+                         Hình ảnh sản phẩm
+                        <div class="col-12">
+                            <label class="form-label">Hình ảnh sản phẩm</label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label">Ảnh chính</label>
+                                    <input type="file" name="files" accept="image/*" class="form-control" id="mainImage">
+                                    <img id="mainImagePreview" class="image-preview mt-2 d-none" width="150">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ảnh mặt trước</label>
+                                    <input type="file" name="files" accept="image/*" class="form-control" id="frontImage">
+                                    <img id="frontImagePreview" class="image-preview mt-2 d-none" width="150">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ảnh mặt sau</label>
+                                    <input type="file" name="files" accept="image/*" class="form-control" id="backImage">
+                                    <img id="backImagePreview" class="image-preview mt-2 d-none" width="150">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Ảnh chi tiết</label>
+                                    <input type="file" name="files" accept="image/*" class="form-control" id="detailImage">
+                                    <img id="detailImagePreview" class="image-preview mt-2 d-none" width="150">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="submit" class="btn btn-primary" form="editProductForm">Cập nhật sản phẩm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Hàm xử lý điền dữ liệu vào modal khi nhấn sửa
+    const editButtons = document.querySelectorAll('.btn-outline-primary');
+
+    editButtons.forEach(button => {
+        button.addEventListener('click', function () {
+            const id = this.getAttribute('data-id');
+            const tensanpham = this.getAttribute('data-tensanpham');
+            const phanLoaiId = this.getAttribute('data-danhmuc');
+            const gia = this.getAttribute('data-gia');
+            const soLuong = this.getAttribute('data-soLuong');
+            const trangThai = this.getAttribute('data-trangthai');
+            const cauHinh = this.getAttribute('data-cauhinh');
+            const mota = this.getAttribute('data-mota');
+            const thuongHieu = this.getAttribute('data-thuonghieu');
+            const model = this.getAttribute('data-model');
+
+            // Điền thông tin vào form sửa
+            document.getElementById('productId').value = id;
+            document.getElementById('tensanpham').value = tensanpham;
+            document.getElementById('phanLoaiId').value = phanLoaiId;
+            document.getElementById('gia').value = gia;
+            document.getElementById('soLuong').value = soLuong;
+            document.getElementById('trangThai').value = trangThai;
+            document.getElementById('cauHinh').value = cauHinh;
+            document.getElementById('mota').value = mota;
+            document.getElementById('thuongHieu').value = thuongHieu;
+            document.getElementById('model').value = model;
+        });
+    });
+</script>
+</body>
+</html>

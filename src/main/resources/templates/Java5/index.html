@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechZone - Trang Chủ Đỉnh Cao</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link th:href="@{/css/home/styles.css}" rel="stylesheet" >
+</head>
+<body>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+<section class="slider-section">
+    <div class="slider">
+        <div class="slide active" style="background-image: url('https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixlib=rb-4.0.3')">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h2 class="slide-title">Công Nghệ Tương Lai</h2>
+                <p class="slide-description">Khám phá những sản phẩm công nghệ đỉnh cao nhất</p>
+                <a href="#" class="btn btn-primary btn-lg slide-btn">Khám phá ngay</a>
+            </div>
+        </div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3')">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h2 class="slide-title">Thiết Bị Thông Minh</h2>
+                <p class="slide-description">Nâng tầm cuộc sống với công nghệ hiện đại</p>
+                <a href="#" class="btn btn-primary btn-lg slide-btn">Xem thêm</a>
+            </div>
+        </div>
+        <div class="slide" style="background-image: url('https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3')">
+            <div class="slide-overlay"></div>
+            <div class="slide-content">
+                <h2 class="slide-title">Ưu Đãi Đặc Biệt</h2>
+                <p class="slide-description">Giảm giá lên đến 50% cho các sản phẩm hot</p>
+                <a href="#" class="btn btn-primary btn-lg slide-btn">Mua ngay</a>
+            </div>
+        </div>
+    </div>
+    <button class="slider-arrow prev"><i class="bi bi-chevron-left"></i></button>
+    <button class="slider-arrow next"><i class="bi bi-chevron-right"></i></button>
+    <div class="slider-controls">
+        <div class="slider-dot active"></div>
+        <div class="slider-dot"></div>
+        <div class="slider-dot"></div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section">
+    <div class="container">
+        <h2 class="section-title">Danh Mục Nổi Bật</h2>
+        <div class="row g-4">
+            <div class="col-md-2"><div class="category-card" data-tilt><i class="bi bi-phone"></i><h5 class="mt-3">Điện thoại</h5></div></div>
+            <div class="col-md-2"><div class="category-card" data-tilt><i class="bi bi-laptop"></i><h5 class="mt-3">Laptop</h5></div></div>
+            <div class="col-md-2"><div class="category-card" data-tilt><i class="bi bi-smartwatch"></i><h5 class="mt-3">Đồng hồ</h5></div></div>
+            <div class="col-md-2"><div class="category-card" data-tilt><i class="bi bi-headphones"></i><h5 class="mt-3">Phụ kiện</h5></div></div>
+            <div class="col-md-2"><div class="category-card" data-tilt><i class="bi bi-display"></i><h5 class="mt-3">Màn hình</h5></div></div>
+            <div class="col-md-2"><div class="category-card" data-tilt><i class="bi bi-mouse"></i><h5 class="mt-3">Chuột</h5></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="products-section">
+    <div class="container">
+        <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+        <div class="row g-4">
+            <!-- Vòng lặp th:each tạo 3 sản phẩm trên 1 hàng -->
+            <div class="col-md-4" th:each="sanpham : ${newestProducts}">
+                <div class="product-card" data-tilt>
+                    <img th:src="@{${sanpham.anhDauTien}}" alt="Product Image" class="product-image img-fluid">
+                    <div class="product-info">
+                        <h3 class="product-title" th:text="${sanpham.tensanpham}"></h3>
+                        <p class="product-price" th:text="${sanpham.formattedPrice} + ' VND'"></p>
+                        <a href="#" class="btn btn-primary w-100" onclick="addToCart()">Thêm vào giỏ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Promo Section -->
+<section class="promo-section">
+    <div class="container">
+        <h2 class="section-title text-white">Khuyến Mãi Hấp Dẫn</h2>
+        <div class="row g-4">
+            <div class="col-md-4"><div class="promo-card"><h3 class="promo-title">Ưu Đãi Đặc Biệt</h3><p>Giảm 20% cho đơn hàng từ 10 triệu.</p><a href="#" class="btn btn-primary">Mua ngay</a></div></div>
+            <div class="col-md-4"><div class="promo-card"><h3 class="promo-title">Flash Sale 24h</h3><p>Giảm sốc tới 50% - Chỉ hôm nay!</p><a href="#" class="btn btn-primary">Khám phá</a></div></div>
+            <div class="col-md-4"><div class="promo-card"><h3 class="promo-title">Combo Siêu Tiết Kiệm</h3><p>Mua 2 tặng 1 - Áp dụng toàn bộ phụ kiện.</p><a href="#" class="btn btn-primary">Xem ngay</a></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <h2 class="section-title">Khách Hàng Nói Gì</h2>
+        <div class="row g-4">
+            <div class="col-md-4"><div class="testimonial-card" data-tilt><p>"Sản phẩm chất lượng, giao hàng nhanh!"</p><h5 class="mt-3">Nguyễn Văn A</h5></div></div>
+            <div class="col-md-4"><div class="testimonial-card" data-tilt><p>"Giá cả hợp lý, hỗ trợ nhiệt tình."</p><h5 class="mt-3">Trần Thị B</h5></div></div>
+            <div class="col-md-4"><div class="testimonial-card" data-tilt><p>"Trải nghiệm mua sắm tuyệt vời!"</p><h5 class="mt-3">Lê Văn C</h5></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Section -->
+<section class="blog-section">
+    <div class="container">
+        <h2 class="section-title">Tin Tức Công Nghệ</h2>
+        <div class="row g-4">
+            <div class="col-md-4"><div class="blog-card" data-tilt><img src="./assets/img/blog1.jpg" alt="Blog 1" class="img-fluid"><div class="p-3"><h5>iPhone 15 có gì mới?</h5><p>Tìm hiểu các tính năng đột phá của iPhone 15.</p><a href="#" class="btn btn-primary">Đọc thêm</a></div></div></div>
+            <div class="col-md-4"><div class="blog-card" data-tilt><img src="./assets/img/blog2.jpg" alt="Blog 2" class="img-fluid"><div class="p-3"><h5>Laptop chơi game 2025</h5><p>Top mẫu laptop mạnh mẽ nhất hiện nay.</p><a href="#" class="btn btn-primary">Đọc thêm</a></div></div></div>
+            <div class="col-md-4"><div class="blog-card" data-tilt><img src="./assets/img/blog3.jpg" alt="Blog 3" class="img-fluid"><div class="p-3"><h5>Phụ kiện không thể thiếu</h5><p>Cập nhật xu hướng phụ kiện công nghệ.</p><a href="#" class="btn btn-primary">Đọc thêm</a></div></div></div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="contact-section">
+    <div class="container">
+        <h2 class="section-title">Liên Hệ Với Chúng Tôi</h2>
+        <div class="row">
+            <div class="col-md-6 mx-auto">
+                <div class="contact-form">
+                    <form>
+                        <div class="mb-3"><input type="text" class="form-control" placeholder="Họ tên"></div>
+                        <div class="mb-3"><input type="email" class="form-control" placeholder="Email"></div>
+                        <div class="mb-3"><textarea class="form-control" rows="4" placeholder="Tin nhắn"></textarea></div>
+                        <button type="submit" class="btn btn-primary w-100">Gửi</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3"><h5>TechZone</h5><p>Công nghệ dẫn đầu tương lai.</p></div>
+            <div class="col-md-2"><h5>Danh mục</h5><ul class="list-unstyled"><li><a href="#">Điện thoại</a></li><li><a href="#">Laptop</a></li><li><a href="#">Phụ kiện</a></li></ul></div>
+            <div class="col-md-2"><h5>Hỗ trợ</h5><ul class="list-unstyled"><li><a href="#">Chính sách bảo hành</a></li><li><a href="#">Hướng dẫn mua hàng</a></li><li><a href="#">Liên hệ</a></li></ul></div>
+            <div class="col-md-2"><h5>Theo dõi</h5><ul class="list-unstyled"><li><a href="#">Facebook</a></li><li><a href="#">Instagram</a></li><li><a href="#">YouTube</a></li></ul></div>
+            <div class="col-md-3"><h5>Đăng ký nhận tin</h5><form><input type="email" class="form-control mb-2" placeholder="Email của bạn"><button type="submit" class="btn btn-primary w-100">Đăng ký</button></form></div>
+        </div>
+        <div class="text-center mt-5"><p>© 2025 TechZone - All Rights Reserved</p></div>
+    </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.7.0/vanilla-tilt.min.js"></script>
+<script>
+    // Add this before the existing scripts
+    // Slider functionality
+    const slides = document.querySelectorAll('.slide');
+    const dots = document.querySelectorAll('.slider-dot');
+    const prevBtn = document.querySelector('.slider-arrow.prev');
+    const nextBtn = document.querySelector('.slider-arrow.next');
+    let currentSlide = 0;
+
+    function showSlide(index) {
+        slides.forEach(slide => slide.classList.remove('active'));
+        dots.forEach(dot => dot.classList.remove('active'));
+
+        slides[index].classList.add('active');
+        dots[index].classList.add('active');
+    }
+
+    function nextSlide() {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    function prevSlide() {
+        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+        showSlide(currentSlide);
+    }
+
+    // Event listeners
+    prevBtn.addEventListener('click', prevSlide);
+    nextBtn.addEventListener('click', nextSlide);
+
+    dots.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            currentSlide = index;
+            showSlide(currentSlide);
+        });
+    });
+
+    // Auto slide
+    setInterval(nextSlide, 5000);
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+
+    // Giả lập đăng nhập
+    function login() {
+        document.getElementById('loginDropdown').classList.add('d-none');
+        document.getElementById('userInfo').classList.remove('d-none');
+    }
+
+    // Giả lập thêm vào giỏ hàng
+    let cartCount = 0;
+    function addToCart() {
+        cartCount++;
+        document.getElementById('cartCount').textContent = cartCount;
+    }
+
+    // Add these new functions to your JavaScript
+    function toggleUserMenu() {
+        const userMenu = document.getElementById('userMenu');
+        userMenu.classList.toggle('show');
+    }
+
+    function logout() {
+        document.getElementById('userInfo').classList.add('d-none');
+        document.getElementById('loginDropdown').classList.remove('d-none');
+        // Hide user menu after logout
+        document.getElementById('userMenu').classList.remove('show');
+    }
+
+    // Close user menu when clicking outside
+    document.addEventListener('click', function(event) {
+        const userInfo = document.getElementById('userInfo');
+        const userMenu = document.getElementById('userMenu');
+        if (!userInfo.contains(event.target) && userMenu.classList.contains('show')) {
+            userMenu.classList.remove('show');
+        }
+    });
+</script>
+</body>
+</html>
