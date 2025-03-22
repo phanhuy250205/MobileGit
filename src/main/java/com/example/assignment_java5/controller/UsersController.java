@@ -155,7 +155,7 @@ public class UsersController {
             model.addAttribute("otpError", "❌ Mã OTP không hợp lệ hoặc đã hết hạn!");
             return "signup";
         }
-
+        nhanviendto.setPasswold(passwordEncoder.encode(nhanviendto.getPasswold()));
         nhanviendto.setTrangThai("Hoạt động");
         nhanviendto.setChucVuId(10002L);
 

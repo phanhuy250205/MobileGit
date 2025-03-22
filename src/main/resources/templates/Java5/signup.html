@@ -291,7 +291,7 @@
                         <span>hoặc đăng ký với email</span>
                     </div>
 
-                    <form th:action="@{/user/register}" method="post" th:object="${nhanviendto}" id="registerForm">
+                    <form th:action="@{/register}" method="post" th:object="${nhanviendto}" id="registerForm">
                         <div class="mb-3">
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fas fa-user"></i></span>
@@ -389,7 +389,7 @@
 
                         <div class="text-center mt-3">
                             <span class="text-muted">Đã có tài khoản? </span>
-                            <a th:href="@{/user/login}" class="text-primary">Đăng nhập ngay</a>
+                            <a th:href="@{/login}" class="text-primary">Đăng nhập ngay</a>
                         </div>
                     </form>
                 </div>
@@ -457,7 +457,7 @@
 
             const email = document.getElementById('email').value;
             console.log("Email gửi lên server: " + email);
-            fetch('/user/send-otp', {
+            fetch('/send-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'email=' + encodeURIComponent(email)
@@ -486,7 +486,7 @@
         verifyOtpBtn.addEventListener('click', function() {
             const otp = Array.from(otpInputs).map(input => input.value).join('');
             console.log("OTP gửi lên server: " + otp);
-            fetch('/user/verify-otp', {
+            fetch('/verify-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'otp=' + otp
@@ -516,7 +516,7 @@
             e.preventDefault();
             const email = document.getElementById('email').value;
             console.log("Email gửi lại OTP: " + email);
-            fetch('/user/send-otp', {
+            fetch('/send-otp', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
                 body: 'email=' + encodeURIComponent(email)
