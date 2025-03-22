@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Blog - TechMobile News</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" th:href="@{/css/uploadblog.css}" />
+</head>
+<body>
+<div class="container">
+  <div class="upload-container">
+    <div class="upload-header">
+      <h1>Tạo bài viết mới</h1>
+      <p>Chia sẻ kiến thức và đánh giá của bạn về công nghệ</p>
+    </div>
+
+    <form class="upload-form">
+      <div class="form-main">
+        <div class="form-group">
+          <label for="title">Tiêu đề bài viết</label>
+          <input type="text" id="title" class="form-control"
+                 placeholder="Nhập tiêu đề bài viết">
+        </div>
+
+        <div class="form-group">
+          <label>Chọn template bài viết</label>
+          <div class="template-grid">
+            <div class="template-item active">
+              <div class="template-preview">
+                <i class="fas fa-newspaper"></i>
+                <span class="template-badge">Phổ biến</span>
+              </div>
+              <div class="template-info">
+                <h4>Review Sản phẩm</h4>
+                <p>Template cho bài đánh giá chi tiết sản phẩm</p>
+              </div>
+            </div>
+
+            <div class="template-item">
+              <div class="template-preview">
+                <i class="fas fa-mobile-alt"></i>
+              </div>
+              <div class="template-info">
+                <h4>So sánh</h4>
+                <p>Template so sánh các sản phẩm</p>
+              </div>
+            </div>
+
+            <div class="template-item">
+              <div class="template-preview">
+                <i class="fas fa-lightbulb"></i>
+              </div>
+              <div class="template-info">
+                <h4>Tin tức</h4>
+                <p>Template cho tin tức và cập nhật</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Preview bài viết</label>
+          <div class="preview-box">
+            <div class="preview-header">
+              <div class="preview-actions">
+                <button type="button" class="preview-btn active">
+                  <i class="fas fa-desktop"></i> Desktop
+                </button>
+                <button type="button" class="preview-btn">
+                  <i class="fas fa-tablet-alt"></i> Tablet
+                </button>
+                <button type="button" class="preview-btn">
+                  <i class="fas fa-mobile-alt"></i> Mobile
+                </button>
+              </div>
+            </div>
+            <div class="preview-frame">
+              <div class="preview-content">
+                <img src="https://via.placeholder.com/600x300" alt="Preview" class="preview-image">
+                <h2 class="preview-title">Tiêu đề bài viết của bạn sẽ hiển thị ở đây</h2>
+                <div class="preview-meta">
+                  <span><i class="fas fa-user"></i> Tech Expert</span>
+                  <span><i class="fas fa-calendar"></i> Hôm nay</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Nội dung</label>
+          <div class="editor-toolbar">
+            <button type="button"><i class="fas fa-bold"></i></button>
+            <button type="button"><i class="fas fa-italic"></i></button>
+            <button type="button"><i class="fas fa-link"></i></button>
+            <button type="button"><i class="fas fa-image"></i></button>
+            <button type="button"><i class="fas fa-list-ul"></i></button>
+            <button type="button"><i class="fas fa-quote-right"></i></button>
+          </div>
+          <div class="editor-content" contenteditable="true">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-sidebar">
+        <div class="option-box">
+          <h3>Ảnh đại diện</h3>
+          <div class="image-upload">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Kéo thả hoặc click để tải ảnh lên</p>
+            <input type="file" hidden>
+          </div>
+        </div>
+
+        <div class="option-box">
+          <h3>Chuyên mục</h3>
+          <select class="form-control">
+            <option>Điện thoại</option>
+            <option>Máy tính bảng</option>
+            <option>Phụ kiện</option>
+            <option>Đánh giá</option>
+          </select>
+        </div>
+
+        <div class="option-box">
+          <h3>Thông tin tác giả</h3>
+          <div class="author-info">
+            <div class="form-group">
+              <label for="author">Tác giả</label>
+              <div class="author-input">
+                <img src="https://via.placeholder.com/40" alt="Author avatar" class="author-avatar">
+                <input type="text" id="author" class="form-control" value="Tech Expert" readonly>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="publish-date">Ngày đăng</label>
+              <input type="datetime-local" id="publish-date" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <div class="option-box">
+          <h3>Tags</h3>
+          <div class="tags-input">
+            <div class="tag">
+              iPhone <i class="fas fa-times"></i>
+            </div>
+            <div class="tag">
+              Review <i class="fas fa-times"></i>
+            </div>
+            <input type="text" placeholder="Thêm tag" class="form-control">
+          </div>
+        </div>
+
+        <div class="option-box">
+          <h3>Trạng thái</h3>
+          <select class="form-control">
+            <option>Bản nháp</option>
+            <option>Chờ duyệt</option>
+            <option>Công khai</option>
+          </select>
+        </div>
+
+        <div class="btn-group">
+          <button type="button" class="btn btn-outline">Lưu nháp</button>
+          <button type="submit" class="btn btn-primary">Đăng bài</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Xử lý upload ảnh
+  const imageUpload = document.querySelector('.image-upload');
+  const fileInput = imageUpload.querySelector('input[type="file"]');
+
+  imageUpload.addEventListener('click', () => {
+    fileInput.click();
+  });
+
+  // Xử lý tags
+  const tagsInput = document.querySelector('.tags-input input');
+  const tagsContainer = document.querySelector('.tags-input');
+
+  tagsInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && tagsInput.value) {
+      const tag = document.createElement('div');
+      tag.className = 'tag';
+      tag.innerHTML = `
+                    ${tagsInput.value}
+                    <i class="fas fa-times"></i>
+                `;
+      tagsContainer.insertBefore(tag, tagsInput);
+      tagsInput.value = '';
+    }
+  });
+
+  // Xóa tags
+  tagsContainer.addEventListener('click', (e) => {
+    if (e.target.classList.contains('fa-times')) {
+      e.target.parentElement.remove();
+    }
+  });
+
+  // Cập nhật preview khi nhập tiêu đề
+  const titleInput = document.getElementById('title');
+  const previewTitle = document.querySelector('.preview-title');
+
+  titleInput.addEventListener('input', (e) => {
+    previewTitle.textContent = e.target.value || 'Tiêu đề bài viết của bạn sẽ hiển thị ở đây';
+  });
+
+  // Chọn template
+  const templateItems = document.querySelectorAll('.template-item');
+  templateItems.forEach(item => {
+    item.addEventListener('click', () => {
+      templateItems.forEach(i => i.classList.remove('active'));
+      item.classList.add('active');
+    });
+  });
+
+  // Chuyển đổi preview mode
+  const previewBtns = document.querySelectorAll('.preview-btn');
+  const previewFrame = document.querySelector('.preview-frame');
+
+  previewBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      previewBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      // Thay đổi width của preview theo device
+      if (btn.textContent.includes('Mobile')) {
+        previewFrame.style.maxWidth = '375px';
+      } else if (btn.textContent.includes('Tablet')) {
+        previewFrame.style.maxWidth = '768px';
+      } else {
+        previewFrame.style.maxWidth = '100%';
+      }
+    });
+  });
+</script>
+</body>
+</html>
