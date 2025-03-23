@@ -26,27 +26,28 @@ public class CustomUserDetailsService implements UserDetailsService {
 
         // Ánh xạ role dựa trên chucVu.id
         String role;
+        SimpleGrantedAuthority authority; // Khai báo authority ở đây, chỉ gán giá trị một lần
         phanloaichucvu chucVu = nhanVien.getChucVu();
 
         if (chucVu != null && chucVu.getId() != null) {
             switch (chucVu.getId().intValue()) {
-                case 10002:
-                    role = "ROLE_USER";
+                case 2: // Admin
+                    role = "ADMIN";
                     break;
-                // Thêm các case khác nếu cần
+                case 10002: // khachang
+                    role = "USER";
+                    break;
                 default:
-                    role = "ROLE_GUEST";
-                    break;
+                    throw new UsernameNotFoundException("Invalid role for user with chuc_vu_id: " + chucVu.getId());
             }
+            authority = new SimpleGrantedAuthority("ROLE_" + role);
         } else {
-            role = "ROLE_GUEST";
+            authority = new SimpleGrantedAuthority("ROLE_GUEST"); // Nhất quán với tiền tố "ROLE_"
         }
-
-        SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role);
 
         return new User(
                 nhanVien.getEmail(),
-                nhanVien.getPasswold(), // Giả sử đã sửa tên trường thành password
+                nhanVien.getPasswold(),
                 Collections.singletonList(authority)
         );
     }

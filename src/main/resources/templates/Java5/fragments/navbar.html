@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">>
 <head>
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -32,23 +32,28 @@
                     <i class="bi bi-person-circle"></i>
                     <h6 class="mb-0" th:text="${session.username != null ? session.username : 'Chưa đăng nhập'}"></h6>
                     <i class="bi bi-chevron-down ms-2"></i>
-                    <div class="user-menu" id="userMenu">
-                        <div class="user-menu-item">
+                    <div class="user-menu" id="userMenu" sec:authorize="isAuthenticated()">
+                        <a href="/profile" class="user-menu-item">
                             <i class="bi bi-person"></i>
                             <span>Thông tin tài khoản</span>
-                        </div>
-                        <div class="user-menu-item">
+                        </a>
+                        <a href="/order-history" class="user-menu-item">
                             <i class="bi bi-clock-history"></i>
                             <span>Lịch sử đơn hàng</span>
-                        </div>
-                        <div class="user-menu-item">
+                        </a>
+                        <a href="/favorites" class="user-menu-item">
                             <i class="bi bi-heart"></i>
                             <span>Sản phẩm yêu thích</span>
-                        </div>
-                        <div class="user-menu-item">
+                        </a>
+                        <a href="/settings" class="user-menu-item">
                             <i class="bi bi-gear"></i>
                             <span>Cài đặt</span>
-                        </div>
+                        </a>
+                        <a th:href="@{/blogs/new}" class="user-menu-item" sec:authorize="hasRole('ADMIN')">
+                            <i class="bi bi-plus-circle"></i>
+                            <span>Tạo bài viết</span>
+                        </a>
+
                         <form th:action="@{/logout}" method="post" style="display:inline;">
                             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
                             <button type="submit" class="btn btn-danger ms-2">Đăng xuất</button>
@@ -110,6 +115,21 @@
         align-items: center;
         justify-content: center;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    .user-menu-item {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        text-decoration: none; /* Bỏ gạch chân của thẻ a */
+        color: #333; /* Màu chữ */
+    }
+
+    .user-menu-item:hover {
+        background-color: #f0f0f0; /* Hiệu ứng hover */
+    }
+
+    .user-menu-item i {
+        margin-right: 8px; /* Khoảng cách giữa biểu tượng và chữ */
     }
 </style>
 </html>

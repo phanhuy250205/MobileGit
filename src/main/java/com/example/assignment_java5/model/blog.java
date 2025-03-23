@@ -36,6 +36,11 @@ public class blog {
     @Column(name = "trang_thai", columnDefinition = "NVARCHAR(50) DEFAULT 'Hoạt động'")
     private String trangThai = "Hoạt động"; // Trạng thái mặc định
 
+    @Column(name = "anh_dai_dien")
+    private String anhDaiDien; // Trường mới để lưu đường dẫn ảnh đại diện
+    @Column(name = "tags")
+    private String tags; // Lưu dưới dạng chuỗi, ví dụ: "iPhone,Review"
+
     // Tự động cập nhật ngày tạo trước khi lưu
     @PrePersist
     protected void onCreate() {

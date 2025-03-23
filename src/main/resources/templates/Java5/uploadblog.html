@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Upload Blog - TechMobile News</title>
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" th:href="@{/css/uploadblog.css}" />
+  <link rel="stylesheet" th:href="@{/css/form/uploadblog.css}" />
 </head>
 <body>
 <div class="container">
@@ -14,14 +14,15 @@
     <div class="upload-header">
       <h1>Tạo bài viết mới</h1>
       <p>Chia sẻ kiến thức và đánh giá của bạn về công nghệ</p>
+      <p th:if="${error}" th:text="${error}" style="color: red;"></p> <!-- Hiển thị lỗi nếu có -->
     </div>
 
-    <form class="upload-form">
+    <form class="upload-form" th:action="@{/blogs/save}" th:object="${blog}" method="post" enctype="multipart/form-data">
       <div class="form-main">
         <div class="form-group">
           <label for="title">Tiêu đề bài viết</label>
-          <input type="text" id="title" class="form-control"
-                 placeholder="Nhập tiêu đề bài viết">
+          <input type="text" id="title" class="form-control" th:field="*{tieuDe}"
+                 placeholder="Nhập tiêu đề bài viết" required>
         </div>
 
         <div class="form-group">
@@ -37,7 +38,6 @@
                 <p>Template cho bài đánh giá chi tiết sản phẩm</p>
               </div>
             </div>
-
             <div class="template-item">
               <div class="template-preview">
                 <i class="fas fa-mobile-alt"></i>
@@ -47,7 +47,6 @@
                 <p>Template so sánh các sản phẩm</p>
               </div>
             </div>
-
             <div class="template-item">
               <div class="template-preview">
                 <i class="fas fa-lightbulb"></i>
@@ -78,8 +77,9 @@
             </div>
             <div class="preview-frame">
               <div class="preview-content">
-                <img src="https://via.placeholder.com/600x300" alt="Preview" class="preview-image">
-                <h2 class="preview-title">Tiêu đề bài viết của bạn sẽ hiển thị ở đây</h2>
+                <img th:src="${blog.anhDaiDien != null ? blog.anhDaiDien : 'https://via.placeholder.com/600x300'}"
+                     alt="Preview" class="preview-image">
+                <h2 class="preview-title" th:text="${blog.tieuDe} ?: 'Tiêu đề bài viết của bạn sẽ hiển thị ở đây'"></h2>
                 <div class="preview-meta">
                   <span><i class="fas fa-user"></i> Tech Expert</span>
                   <span><i class="fas fa-calendar"></i> Hôm nay</span>
@@ -99,8 +99,8 @@
             <button type="button"><i class="fas fa-list-ul"></i></button>
             <button type="button"><i class="fas fa-quote-right"></i></button>
           </div>
-          <div class="editor-content" contenteditable="true">
-          </div>
+          <div class="editor-content" contenteditable="true" id="editor"></div>
+          <input type="hidden" th:field="*{noiDung}" id="noiDungHidden">
         </div>
       </div>
 
@@ -110,7 +110,7 @@
           <div class="image-upload">
             <i class="fas fa-cloud-upload-alt"></i>
             <p>Kéo thả hoặc click để tải ảnh lên</p>
-            <input type="file" hidden>
+            <input type="file" name="imageFile" hidden accept="image/*">
           </div>
         </div>
 
@@ -136,7 +136,7 @@
             </div>
             <div class="form-group">
               <label for="publish-date">Ngày đăng</label>
-              <input type="datetime-local" id="publish-date" class="form-control">
+              <input type="datetime-local" id="publish-date" class="form-control" th:field="*{ngayCapNhat}">
             </div>
           </div>
         </div>
@@ -144,27 +144,22 @@
         <div class="option-box">
           <h3>Tags</h3>
           <div class="tags-input">
-            <div class="tag">
-              iPhone <i class="fas fa-times"></i>
-            </div>
-            <div class="tag">
-              Review <i class="fas fa-times"></i>
-            </div>
-            <input type="text" placeholder="Thêm tag" class="form-control">
+            <input type="text" name="tags" placeholder="Thêm tag" class="form-control">
           </div>
         </div>
 
         <div class="option-box">
           <h3>Trạng thái</h3>
-          <select class="form-control">
-            <option>Bản nháp</option>
-            <option>Chờ duyệt</option>
-            <option>Công khai</option>
+          <select class="form-control" th:field="*{trangThai}">
+            <option value="Bản nháp">Bản nháp</option>
+            <option value="Chờ duyệt">Chờ duyệt</option>
+            <option value="Công khai">Công khai</option>
           </select>
         </div>
 
         <div class="btn-group">
-          <button type="button" class="btn btn-outline">Lưu nháp</button>
+          <input type="hidden" th:field="*{nhanVienId}">
+          <button type="submit" name="saveDraft" value="true" class="btn btn-outline">Lưu nháp</button>
           <button type="submit" class="btn btn-primary">Đăng bài</button>
         </div>
       </div>
@@ -172,45 +167,70 @@
   </div>
 </div>
 
-<script>
+<script th:inline="javascript">
   // Xử lý upload ảnh
   const imageUpload = document.querySelector('.image-upload');
   const fileInput = imageUpload.querySelector('input[type="file"]');
+  const previewImage = document.querySelector('.preview-image');
 
-  imageUpload.addEventListener('click', () => {
-    fileInput.click();
+  imageUpload.addEventListener('click', () => fileInput.click());
+  fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        previewImage.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
   });
 
   // Xử lý tags
   const tagsInput = document.querySelector('.tags-input input');
   const tagsContainer = document.querySelector('.tags-input');
+  let tags = [];
 
   tagsInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && tagsInput.value) {
       const tag = document.createElement('div');
       tag.className = 'tag';
-      tag.innerHTML = `
-                    ${tagsInput.value}
-                    <i class="fas fa-times"></i>
-                `;
+      tag.innerHTML = `${tagsInput.value} <i class="fas fa-times"></i>`;
       tagsContainer.insertBefore(tag, tagsInput);
+      tags.push(tagsInput.value);
       tagsInput.value = '';
+      updateTagsField();
     }
   });
 
-  // Xóa tags
   tagsContainer.addEventListener('click', (e) => {
     if (e.target.classList.contains('fa-times')) {
+      const tagText = e.target.parentElement.textContent.trim().split(' ')[0];
+      tags = tags.filter(t => t !== tagText);
       e.target.parentElement.remove();
+      updateTagsField();
     }
   });
+
+  function updateTagsField() {
+    const hiddenTagsInput = document.createElement('input');
+    hiddenTagsInput.type = 'hidden';
+    hiddenTagsInput.name = 'tags';
+    hiddenTagsInput.value = tags.join(',');
+    tagsContainer.appendChild(hiddenTagsInput);
+  }
 
   // Cập nhật preview khi nhập tiêu đề
   const titleInput = document.getElementById('title');
   const previewTitle = document.querySelector('.preview-title');
-
   titleInput.addEventListener('input', (e) => {
     previewTitle.textContent = e.target.value || 'Tiêu đề bài viết của bạn sẽ hiển thị ở đây';
+  });
+
+  // Đồng bộ nội dung editor với input hidden
+  const editor = document.getElementById('editor');
+  const noiDungHidden = document.getElementById('noiDungHidden');
+  editor.addEventListener('input', () => {
+    noiDungHidden.value = editor.innerHTML;
   });
 
   // Chọn template
@@ -225,13 +245,10 @@
   // Chuyển đổi preview mode
   const previewBtns = document.querySelectorAll('.preview-btn');
   const previewFrame = document.querySelector('.preview-frame');
-
   previewBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       previewBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-
-      // Thay đổi width của preview theo device
       if (btn.textContent.includes('Mobile')) {
         previewFrame.style.maxWidth = '375px';
       } else if (btn.textContent.includes('Tablet')) {
