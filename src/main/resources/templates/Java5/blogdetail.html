@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${blog.tieuDe}">Chi tiết bài viết</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f5f5f7;
+            color: #1d1d1f;
+            line-height: 1.7;
+        }
+
+        .blog-header {
+            background: linear-gradient(to right, #000428, #004e92);
+            padding: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .blog-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://subtle-patterns.com/patterns/dark-paths.png');
+            opacity: 0.1;
+        }
+
+        .blog-container {
+            max-width: 1000px;
+            margin: -50px auto 50px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            position: relative;
+        }
+
+        .author-info {
+            background: rgba(245, 245, 247, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .author-info:hover {
+            transform: translateY(-5px);
+        }
+
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border: 4px solid white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .blog-content {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: #2c2c2e;
+        }
+
+        .featured-image {
+            border-radius: 20px;
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            margin: 2rem 0;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .featured-image:hover {
+            transform: scale(1.02);
+        }
+
+        .tag-badge {
+            padding: 0.7rem 1.5rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            margin: 0.3rem;
+        }
+
+        .tag-badge:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .share-button {
+            border-radius: 30px;
+            padding: 0.8rem 2rem;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        .share-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .blog-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            font-weight: 700;
+            line-height: 1.3;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, #1a1a1a, #4a4a4a);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metadata {
+            font-size: 0.95rem;
+            color: #6b6b6b;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .metadata i {
+            color: #004e92;
+        }
+
+        .breadcrumb-custom {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            backdrop-filter: blur(5px);
+            display: inline-block;
+        }
+
+        .breadcrumb-item a {
+            color: white;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .breadcrumb-item a:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .social-share {
+            background: linear-gradient(135deg, #f6f9fc 0%, #eef2f7 100%);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+
+        .social-share h5 {
+            font-family: 'Playfair Display', serif;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .btn-facebook {
+            background: #3b5998;
+            color: white;
+        }
+
+        .btn-twitter {
+            background: #1da1f2;
+            color: white;
+        }
+
+        .btn-pinterest {
+            background: #bd081c;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .blog-container {
+                margin: -30px 15px 30px;
+                padding: 1.5rem;
+            }
+
+            .blog-title {
+                font-size: 2rem;
+            }
+
+            .featured-image {
+                height: 300px;
+            }
+        }
+
+        .image-grid {
+            margin-top: 2rem;
+        }
+
+        .image-card {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .secondary-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            font-size: 0.9rem;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .image-card:hover .image-caption {
+            transform: translateY(0);
+        }
+
+        .lead {
+            font-size: 1.25rem;
+            font-weight: 300;
+            line-height: 1.8;
+            color: #4a4a4a;
+            margin-bottom: 2rem;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            color: #1a1a1a;
+            margin: 2rem 0 1rem;
+        }
+
+        .blog-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .secondary-image {
+                height: 200px;
+            }
+        }
+
+        .article-section {
+            margin: 4rem 0;
+            position: relative;
+        }
+
+        .main-image-container {
+            margin: 2rem 0;
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .featured-image {
+            width: 100%;
+            height: 500px;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .article-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 15px;
+            transition: transform 0.5s ease;
+        }
+
+        .image-card {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .image-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .image-card:hover .image-caption {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: #1a1a1a;
+        }
+
+        .conclusion {
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+            padding: 2rem;
+            border-radius: 15px;
+            border-left: 5px solid #004e92;
+        }
+
+        @media (max-width: 768px) {
+            .article-section {
+                margin: 2rem 0;
+            }
+
+            .featured-image {
+                height: 300px;
+            }
+
+            .article-image {
+                height: 250px;
+                margin: 1rem 0;
+            }
+
+            .row {
+                margin-bottom: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<header class="blog-header">
+    <div class="container">
+        <div class="breadcrumb-custom">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="/blog"><i class="fas fa-home"></i> Trang chủ</a></li>
+                    <li class="breadcrumb-item active">Review iPhone 15 Pro Max: Siêu phẩm đáng mong đợi</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<div class="container">
+    <div class="blog-container">
+        <h1 class="blog-title">Review iPhone 15 Pro Max: Siêu phẩm đáng mong đợi</h1>
+
+        <div class="author-info d-flex align-items-center">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg"
+                 class="author-avatar rounded-circle me-4" alt="Avatar">
+            <div>
+                <h5 class="mb-2">Nguyễn Văn An</h5>
+                <div class="metadata">
+                    <span><i class="far fa-calendar-alt"></i> 15/03/2024 10:30</span>
+                    <span><i class="fas fa-eye"></i> 1,234 lượt xem</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="article-section">
+            <p class="lead">
+                iPhone 15 Pro Max đánh dấu một bước tiến quan trọng của Apple trong việc định nghĩa lại smartphone cao cấp,
+                với nhiều cải tiến đáng giá về thiết kế và công nghệ.
+            </p>
+            <div class="main-image-container">
+                <img src="https://images.unsplash.com/photo-1632661674596-df3906892737?w=800"
+                     class="featured-image" alt="iPhone 15 Pro Max">
+                <div class="image-caption">
+                    iPhone 15 Pro Max với thiết kế hoàn toàn mới
+                </div>
+            </div>
+        </div>
+
+        <div class="article-section">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h2>Thiết kế đột phá với Titanium</h2>
+                    <p>
+                        Lần đầu tiên trong lịch sử iPhone, Apple sử dụng khung viền titanium thay vì thép không gỉ.
+                        Điều này không chỉ mang lại vẻ đẹp sang trọng mà còn giúp giảm đáng kể trọng lượng của thiết bị,
+                        mang lại cảm giác cầm nắm thoải mái hơn.
+                    </p>
+                    <p>
+                        Với việc sử dụng titanium, iPhone 15 Pro Max nhẹ hơn đến 19g so với người tiền nhiệm,
+                        đồng thời mang lại độ bền cao hơn và khả năng chống trầy xước tốt hơn.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <div class="image-card">
+                        <img src="https://images.unsplash.com/photo-1696446701831-7b9a6b98e4b9?w=800"
+                             class="article-image" alt="Thiết kế iPhone 15">
+                        <div class="image-caption">
+                            Thiết kế titanium cao cấp, sang trọng
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="article-section">
+            <div class="row align-items-center flex-md-row-reverse">
+                <div class="col-md-6">
+                    <h2>Hệ thống camera chuyên nghiệp</h2>
+                    <p>
+                        Camera chính 48MP với ống kính tele 5x cho phép chụp ảnh ở khoảng cách xa với
+                        độ chi tiết ấn tượng. Khả năng chụp đêm được cải thiện đáng kể nhờ cảm biến
+                        mới và thuật toán xử lý hình ảnh thông minh.
+                    </p>
+                    <p>
+                        Với khả năng zoom quang học 5x, người dùng có thể chụp ảnh từ xa mà vẫn đảm bảo
+                        chất lượng hình ảnh sắc nét. Chế độ chụp đêm cũng được cải thiện với khả năng
+                        thu sáng tốt hơn và giảm nhiễu hiệu quả.
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <div class="image-card">
+                        <img src="https://images.unsplash.com/photo-1696446702183-cbd35a8bc0e3?w=800"
+                             class="article-image" alt="Camera iPhone 15">
+                        <div class="image-caption">
+                            Cụm camera chuyên nghiệp với độ phân giải 48MP
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="article-section conclusion">
+            <h2>Đánh giá chung</h2>
+            <p>
+                iPhone 15 Pro Max là một bước tiến đáng kể của Apple trong phân khúc smartphone cao cấp.
+                Với những cải tiến về thiết kế, camera và hiệu năng, đây thực sự là một lựa chọn xứng đáng
+                cho những người dùng đang tìm kiếm một thiết bị cao cấp.
+            </p>
+        </div>
+
+        <!-- Tags -->
+        <div class="tags-section my-4">
+            <h5><i class="fas fa-tags"></i> Tags</h5>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="tag-badge">iPhone 15</span>
+                <span class="tag-badge">Apple</span>
+                <span class="tag-badge">Smartphone</span>
+                <span class="tag-badge">Review</span>
+            </div>
+        </div>
+
+        <!-- Share buttons -->
+        <div class="social-share">
+            <h5><i class="fas fa-share-alt"></i> Chia sẻ bài viết</h5>
+            <div class="d-flex gap-3">
+                <button class="share-button btn btn-facebook">
+                    <i class="fab fa-facebook-f me-2"></i> Facebook
+                </button>
+                <button class="share-button btn btn-twitter">
+                    <i class="fab fa-twitter me-2"></i> Twitter
+                </button>
+                <button class="share-button btn btn-pinterest">
+                    <i class="fab fa-pinterest me-2"></i> Pinterest
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

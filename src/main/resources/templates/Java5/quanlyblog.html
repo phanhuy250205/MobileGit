@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản Lý Blog</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary-color: #2563eb;
+      --secondary-color: #3b82f6;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .dashboard-header {
+      background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+      padding: 1.5rem 0;
+      color: white;
+      margin-bottom: 2rem;
+    }
+
+    .stats-card {
+      background: white;
+      border-radius: 15px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s ease;
+    }
+
+    .stats-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .blog-table {
+      background: white;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .blog-table th {
+      background: #f1f5f9;
+      font-weight: 600;
+    }
+
+    .action-btn {
+      width: 35px;
+      height: 35px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .action-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .status-badge {
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.875rem;
+    }
+
+    .search-box {
+      border-radius: 10px;
+      border: 1px solid #e2e8f0;
+      padding: 0.75rem 1rem;
+    }
+
+    .thumbnail-img {
+      width: 100px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 8px;
+      transition: transform 0.3s ease;
+    }
+
+    .thumbnail-img:hover {
+      transform: scale(1.1);
+    }
+
+    .blog-title {
+      color: #1e293b;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+
+    .blog-title:hover {
+      color: var(--primary-color);
+    }
+
+    .tag-list {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-size: 0.75rem;
+      padding: 0.25rem 0.75rem;
+      background: #e2e8f0;
+      border-radius: 15px;
+      color: #64748b;
+    }
+  </style>
+</head>
+<body>
+<!-- Header -->
+<div class="dashboard-header">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1 class="h3 mb-0">Quản Lý Blog</h1>
+      <a href="/upload-blog" class="btn btn-light">
+        <i class="fas fa-plus"></i> Thêm Bài Viết
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- Thống kê -->
+  <div class="row mb-4">
+    <div class="col-md-3">
+      <div class="stats-card">
+        <h3 class="h5 mb-3">Tổng Bài Viết</h3>
+        <div class="d-flex align-items-center">
+          <i class="fas fa-newspaper fa-2x text-primary me-3"></i>
+          <span class="h3 mb-0">125</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card">
+        <h3 class="h5 mb-3">Đang Hoạt Động</h3>
+        <div class="d-flex align-items-center">
+          <i class="fas fa-check-circle fa-2x text-success me-3"></i>
+          <span class="h3 mb-0">98</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card">
+        <h3 class="h5 mb-3">Tạm Khóa</h3>
+        <div class="d-flex align-items-center">
+          <i class="fas fa-pause-circle fa-2x text-warning me-3"></i>
+          <span class="h3 mb-0">27</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="stats-card">
+        <h3 class="h5 mb-3">Lượt Xem</h3>
+        <div class="d-flex align-items-center">
+          <i class="fas fa-eye fa-2x text-info me-3"></i>
+          <span class="h3 mb-0">5,234</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Thanh tìm kiếm và lọc -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <div class="input-group">
+        <input type="text" class="form-control search-box" placeholder="Tìm kiếm bài viết...">
+        <button class="btn btn-primary">
+          <i class="fas fa-search"></i>
+        </button>
+      </div>
+    </div>
+    <div class="col-md-6 d-flex justify-content-end gap-2">
+      <select class="form-select w-auto">
+        <option>Tất cả trạng thái</option>
+        <option>Hoạt động</option>
+        <option>Tạm khóa</option>
+      </select>
+      <select class="form-select w-auto">
+        <option>Mới nhất</option>
+        <option>Cũ nhất</option>
+        <option>Lượt xem cao</option>
+        <option>Lượt xem thấp</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Bảng danh sách blog -->
+  <div class="blog-table table-responsive">
+    <table class="table table-hover align-middle mb-0">
+      <thead>
+      <tr>
+        <th style="width: 120px">Ảnh</th>
+        <th>Tiêu Đề & Tags</th>
+        <th>Tác Giả</th>
+        <th>Ngày Đăng</th>
+        <th>Trạng Thái</th>
+        <th>Lượt Xem</th>
+        <th style="width: 100px">Thao Tác</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>
+          <img src="https://via.placeholder.com/200x120" class="thumbnail-img" alt="Blog thumbnail">
+        </td>
+        <td>
+          <a href="#" class="blog-title d-block mb-2">Review iPhone 15 Pro Max: Siêu phẩm đáng mong đợi</a>
+          <div class="tag-list">
+            <span class="tag">iPhone</span>
+            <span class="tag">Review</span>
+            <span class="tag">Technology</span>
+          </div>
+        </td>
+        <td>Nguyễn Văn A</td>
+        <td>15/03/2024</td>
+        <td>
+          <span class="status-badge bg-success text-white">Hoạt động</span>
+        </td>
+        <td>1,234</td>
+        <td>
+          <div class="d-flex gap-2">
+            <a href="/edit-blog/1" class="btn btn-primary action-btn" title="Sửa">
+              <i class="fas fa-edit"></i>
+            </a>
+            <button class="btn btn-danger action-btn" title="Xóa"
+                    onclick="confirmDelete(1)">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        </td>
+      </tr>
+      <!-- Thêm các hàng khác tương tự -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Phân trang -->
+  <div class="d-flex justify-content-between align-items-center mt-4">
+    <div>Hiển thị 1-10 của 125 bài viết</div>
+    <nav>
+      <ul class="pagination mb-0">
+        <li class="page-item"><a class="page-link" href="#">Trước</a></li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">Sau</a></li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<script>
+  function confirmDelete(id) {
+    if (confirm('Bạn có chắc chắn muốn xóa bài viết này?')) {
+      // Xử lý xóa bài viết
+      console.log('Xóa bài viết có ID:', id);
+    }
+  }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

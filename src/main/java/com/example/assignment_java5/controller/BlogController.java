@@ -1,9 +1,9 @@
 package com.example.assignment_java5.controller;
 
-
 import com.example.assignment_java5.Dto.BlogDTO;
 import com.example.assignment_java5.model.blog;
 import com.example.assignment_java5.model.nhanvien;
+import com.example.assignment_java5.service.BlogImageService;
 import com.example.assignment_java5.service.BlogService;
 import com.example.assignment_java5.service.FileUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Controller // Đổi thành @Controller để trả về view Thymeleaf
+@Controller
 @RequestMapping("/blogs")
 public class BlogController {
 
@@ -26,6 +25,9 @@ public class BlogController {
 
     @Autowired
     private FileUploadService fileUploadService;
+
+    @Autowired
+    private BlogImageService blogImageService;
 
     // Chuyển từ Blog sang BlogDTO
     private BlogDTO convertToDTO(blog blog) {
@@ -37,8 +39,11 @@ public class BlogController {
         blogDTO.setNgayCapNhat(blog.getNgayCapNhat());
         blogDTO.setTrangThai(blog.getTrangThai());
         blogDTO.setNhanVienId(blog.getNhanVien().getId());
-        blogDTO.setAnhDaiDien(blog.getAnhDaiDien()); // Thêm trường ảnh đại diện
+        blogDTO.setAnhDaiDien(blog.getAnhDaiDien());
         blogDTO.setTags(blog.getTags());
+        // Thêm danh sách ảnh
+        List<com.example.assignment_java5.model.BlogImage> images = blogImageService.findByBlogId(blog.getId());
+        blogDTO.setImages(images);
         return blogDTO;
     }
 
@@ -49,7 +54,7 @@ public class BlogController {
         blog.setTieuDe(blogDTO.getTieuDe());
         blog.setNoiDung(blogDTO.getNoiDung());
         blog.setTrangThai(blogDTO.getTrangThai());
-        blog.setAnhDaiDien(blogDTO.getAnhDaiDien()); // Thêm trường ảnh đại diện
+        blog.setAnhDaiDien(blogDTO.getAnhDaiDien());
         blog.setTags(blogDTO.getTags());
 
         nhanvien nhanVien = new nhanvien();
@@ -62,85 +67,111 @@ public class BlogController {
     public String getAllBlogs(Model model) {
         List<blog> blogs = blogService.findAll();
         List<BlogDTO> blogDTOs = blogs.stream().map(this::convertToDTO).collect(Collectors.toList());
-        blogDTOs.forEach(blog -> System.out.println("Ảnh đại diện: " + blog.getAnhDaiDien()));
         model.addAttribute("blogs", blogDTOs);
         return "blog";
     }
+
     @PreAuthorize("hasRole('ADMIN')")
-    // Hiển thị form tạo blog (upload blog)
     @GetMapping("/new")
     public String showCreateForm(Model model) {
         BlogDTO blogDTO = new BlogDTO();
-        blogDTO.setNhanVienId(1L); // Giả sử ID nhân viên mặc định, thay bằng logic thực tế (ví dụ: từ session)
+        blogDTO.setNhanVienId(1L); // Giả sử ID nhân viên mặc định
         model.addAttribute("blog", blogDTO);
-        return "uploadblog"; // Trả về template uploadblog.html
+        return "uploadblog";
     }
 
     @PostMapping("/save")
     public String saveBlog(
             @ModelAttribute("blog") BlogDTO blogDTO,
-            @RequestParam("imageFile") MultipartFile imageFile,
+            @RequestParam("imageFiles") MultipartFile[] imageFiles,
             @RequestParam(value = "saveDraft", required = false) String saveDraft,
-            @RequestParam("tags") String tags, // Thêm tham số này
+            @RequestParam("tags") String tags,
             Model model) {
         try {
-            if (!imageFile.isEmpty()) {
-                String imagePath = fileUploadService.uploadFile(imageFile, "blogs");
-                blogDTO.setAnhDaiDien(imagePath);
-            }
-            blogDTO.setTags(tags); // Gán tags vào DTO
-            if (saveDraft != null) {
-                blogDTO.setTrangThai("Bản nháp");
-            } else {
-                blogDTO.setTrangThai("Công khai");
-            }
+            blogDTO.setId(null);
             blog blog = convertToEntity(blogDTO);
-            blogService.save(blog);
-            return "redirect:/blogs";
-        } catch (IOException e) {
-            model.addAttribute("error", "Lỗi khi upload ảnh: " + e.getMessage());
-            return "uploadblog";
-        } catch (IllegalArgumentException e) {
-            model.addAttribute("error", e.getMessage());
+            blog.setTags(tags);
+            blog.setTrangThai(saveDraft != null ? "Bản nháp" : "Công khai");
+            blog = blogService.save(blog);
+
+            System.out.println("Số lượng file nhận được: " + imageFiles.length);
+            if (imageFiles != null && imageFiles.length > 0) {
+                for (int i = 0; i < imageFiles.length; i++) {
+                    if (!imageFiles[i].isEmpty()) {
+                        System.out.println("Đang xử lý ảnh " + (i + 1) + ": " + imageFiles[i].getOriginalFilename());
+                        String moTa = "Ảnh " + (i + 1) + " cho bài viết: " + blogDTO.getTieuDe();
+                        var blogImage = blogImageService.uploadAndSaveImage(imageFiles[i], blog.getId(), moTa);
+                        if (i == 0 && blog.getAnhDaiDien() == null) {
+                            blog.setAnhDaiDien(blogImage.getDuongDanAnh());
+                        }
+                    }
+                }
+                blogService.save(blog);
+            }
+            return "redirect:/blogs/list";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi lưu blog: " + e.getMessage());
             return "uploadblog";
         }
     }
-    // Hiển thị form chỉnh sửa blog
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
         blog blog = blogService.findById(id);
         if (blog == null) {
-            return "redirect:/blogs"; // Nếu không tìm thấy, quay lại danh sách
+            return "redirect:/blogs/list";
         }
         BlogDTO blogDTO = convertToDTO(blog);
         model.addAttribute("blog", blogDTO);
-        return "blog-form"; // Trả về template blog-form.html
+        return "uploadblog";
     }
 
-    // Xử lý cập nhật blog
     @PostMapping("/update/{id}")
-    public String updateBlog(@PathVariable Long id, @ModelAttribute("blog") BlogDTO blogDTO) {
-        blogDTO.setId(id); // Đảm bảo ID không bị thay đổi
-        blog blog = convertToEntity(blogDTO);
-        blogService.save(blog);
-        return "redirect:/blogs"; // Chuyển hướng về danh sách blog
+    public String updateBlog(
+            @PathVariable Long id,
+            @ModelAttribute("blog") BlogDTO blogDTO,
+            @RequestParam("imageFiles") MultipartFile[] imageFiles,
+            Model model) {
+        try {
+            blogDTO.setId(id);
+            blog blog = convertToEntity(blogDTO);
+
+            // Xử lý upload ảnh mới nếu có
+            if (imageFiles != null && imageFiles.length > 0) {
+                for (int i = 0; i < imageFiles.length; i++) {
+                    if (!imageFiles[i].isEmpty()) {
+                        String moTa = "Ảnh " + (i + 1) + " cập nhật cho bài viết: " + blogDTO.getTieuDe();
+                        var blogImage = blogImageService.uploadAndSaveImage(imageFiles[i], id, moTa);
+                        if (i == 0 && blog.getAnhDaiDien() == null) {
+                            blog.setAnhDaiDien(blogImage.getDuongDanAnh());
+                        }
+                    }
+                }
+            }
+
+            blogService.save(blog);
+            return "redirect:/blogs/list";
+        } catch (Exception e) {
+            model.addAttribute("error", "Lỗi khi cập nhật blog: " + e.getMessage());
+            return "uploadblog";
+        }
     }
 
-    // Xóa blog
     @GetMapping("/delete/{id}")
     public String deleteBlog(@PathVariable Long id) {
-        blogService.deleteById(id);
-        return "redirect:/blogs"; // Chuyển hướng về danh sách blog
+        blog blog = blogService.findById(id);
+        if (blog != null) {
+            List<com.example.assignment_java5.model.BlogImage> images = blogImageService.findByBlogId(id);
+            images.forEach(image -> blogImageService.deleteBlogImage(image.getId()));
+            blogService.deleteById(id);
+        }
+        return "redirect:/blogs/list";
     }
 
-    // Hiển thị danh sách blog theo nhân viên
     @GetMapping("/nhanvien/{nhanVienId}")
     public String getBlogsByNhanVienId(@PathVariable Long nhanVienId, Model model) {
         List<blog> blogs = blogService.findByNhanVienId(nhanVienId);
-        List<BlogDTO> blogDTOs = blogs.stream()
-                .map(this::convertToDTO)
-                .collect(Collectors.toList());
+        List<BlogDTO> blogDTOs = blogs.stream().map(this::convertToDTO).collect(Collectors.toList());
         model.addAttribute("blogs", blogDTOs);
-        return "blog-list"; // Trả về template blog-list.html
+        return "blog-list";
     }
 }

@@ -49,7 +49,7 @@ public class SecurityConfig {
                                 "/send-otp",
                                 "/verify-otp",
                                 "/blogs/list", // Cho phép truy cập công khai
-                                "/profile"
+                                "/profile","/invoice/**","/cart/**","/blogs/**","/admin/**"
                         ).permitAll()
                         .requestMatchers("/dashboard").hasRole("USER")
                         // Chỉ người dùng có vai trò ADMIN được truy cập /blogs/**
@@ -80,7 +80,7 @@ public class SecurityConfig {
                         .permitAll()
                 )
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/cart/add", "/send-otp", "/verify-otp")
+                        .ignoringRequestMatchers("/cart/add", "/send-otp", "/verify-otp","/cart/checkout","/invoice/confirm")
                 )
                 .oauth2Client(Customizer.withDefaults());
         return http.build();

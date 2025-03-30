@@ -12,12 +12,13 @@
 <div class="container">
   <div class="upload-container">
     <div class="upload-header">
-      <h1>Tạo bài viết mới</h1>
+      <h1 th:text="${blog.id != null ? 'Chỉnh sửa bài viết' : 'Tạo bài viết mới'}">Tạo bài viết mới</h1>
       <p>Chia sẻ kiến thức và đánh giá của bạn về công nghệ</p>
-      <p th:if="${error}" th:text="${error}" style="color: red;"></p> <!-- Hiển thị lỗi nếu có -->
+      <p th:if="${error}" th:text="${error}" style="color: red;"></p>
     </div>
 
-    <form class="upload-form" th:action="@{/blogs/save}" th:object="${blog}" method="post" enctype="multipart/form-data">
+    <form class="upload-form" th:action="${blog.id != null} ? @{/blogs/update/{id}(id=${blog.id})} : @{/blogs/save}"
+          th:object="${blog}" method="post" enctype="multipart/form-data">
       <div class="form-main">
         <div class="form-group">
           <label for="title">Tiêu đề bài viết</label>
@@ -99,44 +100,27 @@
             <button type="button"><i class="fas fa-list-ul"></i></button>
             <button type="button"><i class="fas fa-quote-right"></i></button>
           </div>
-          <div class="editor-content" contenteditable="true" id="editor"></div>
+          <div class="editor-content" contenteditable="true" id="editor" th:utext="${blog.noiDung}"></div>
           <input type="hidden" th:field="*{noiDung}" id="noiDungHidden">
         </div>
       </div>
 
       <div class="form-sidebar">
         <div class="option-box">
-          <h3>Ảnh đại diện</h3>
+          <h3>Ảnh đại diện và Thư viện ảnh</h3>
           <div class="image-upload">
             <i class="fas fa-cloud-upload-alt"></i>
             <p>Kéo thả hoặc click để tải ảnh lên</p>
-            <input type="file" name="imageFile" hidden accept="image/*">
+            <input type="file" name="imageFiles" multiple>
           </div>
-        </div>
-
-        <div class="option-box">
-          <h3>Chuyên mục</h3>
-          <select class="form-control">
-            <option>Điện thoại</option>
-            <option>Máy tính bảng</option>
-            <option>Phụ kiện</option>
-            <option>Đánh giá</option>
-          </select>
-        </div>
-
-        <div class="option-box">
-          <h3>Thông tin tác giả</h3>
-          <div class="author-info">
-            <div class="form-group">
-              <label for="author">Tác giả</label>
-              <div class="author-input">
-                <img src="https://via.placeholder.com/40" alt="Author avatar" class="author-avatar">
-                <input type="text" id="author" class="form-control" value="Tech Expert" readonly>
+          <div class="image-preview-container">
+            <h4>Ảnh đã tải lên</h4>
+            <div class="image-grid">
+              <!-- Hiển thị ảnh đã có khi chỉnh sửa -->
+              <div th:each="image : ${blog.images}" class="image-item">
+                <img th:src="${image.duongDanAnh}" alt="Uploaded image">
+                <button type="button" class="delete-btn" th:data-id="${image.id}"><i class="fas fa-times"></i></button>
               </div>
-            </div>
-            <div class="form-group">
-              <label for="publish-date">Ngày đăng</label>
-              <input type="datetime-local" id="publish-date" class="form-control" th:field="*{ngayCapNhat}">
             </div>
           </div>
         </div>
@@ -144,7 +128,8 @@
         <div class="option-box">
           <h3>Tags</h3>
           <div class="tags-input">
-            <input type="text" name="tags" placeholder="Thêm tag" class="form-control">
+            <input type="text" id="tagInput" placeholder="Thêm tag" class="form-control">
+            <input type="hidden" name="tags" id="tagsHidden" th:field="*{tags}">
           </div>
         </div>
 
@@ -168,96 +153,147 @@
 </div>
 
 <script th:inline="javascript">
-  // Xử lý upload ảnh
-  const imageUpload = document.querySelector('.image-upload');
-  const fileInput = imageUpload.querySelector('input[type="file"]');
-  const previewImage = document.querySelector('.preview-image');
+  (function () {
+    const elements = {
+      imageUpload: document.querySelector('.image-upload'),
+      fileInput: document.querySelector('input[name="imageFiles"]'),
+      imageGrid: document.querySelector('.image-grid'),
+      previewImage: document.querySelector('.preview-image'),
+      titleInput: document.getElementById('title'),
+      previewTitle: document.querySelector('.preview-title'),
+      editor: document.getElementById('editor'),
+      noiDungHidden: document.getElementById('noiDungHidden'),
+      tagInput: document.getElementById('tagInput'),
+      tagsContainer: document.querySelector('.tags-input'),
+      tagsHidden: document.getElementById('tagsHidden'),
+      templateItems: document.querySelectorAll('.template-item'),
+      previewBtns: document.querySelectorAll('.preview-btn'),
+      previewFrame: document.querySelector('.preview-frame')
+    };
 
-  imageUpload.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        previewImage.src = event.target.result;
-      };
-      reader.readAsDataURL(file);
+    let tags = elements.tagsHidden.value ? elements.tagsHidden.value.split(',') : [];
+    let selectedFiles = new DataTransfer(); // Lưu trữ tất cả file đã chọn
+
+    function handleImageUpload(files) {
+      console.log('Số file xử lý:', files.length);
+      Array.from(files).forEach(file => {
+        if (file.type.startsWith('image/')) {
+          selectedFiles.items.add(file); // Thêm file vào DataTransfer
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            const imageItem = document.createElement('div');
+            imageItem.className = 'image-item';
+            imageItem.innerHTML = `
+              <img src="${e.target.result}" alt="Uploaded image">
+              <button type="button" class="delete-btn"><i class="fas fa-times"></i></button>
+            `;
+            elements.imageGrid.appendChild(imageItem);
+            if (elements.imageGrid.children.length === 1 && !elements.previewImage.src.includes('via.placeholder.com')) {
+              elements.previewImage.src = e.target.result;
+            }
+            imageItem.querySelector('.delete-btn').addEventListener('click', () => {
+              imageItem.remove();
+              const index = Array.from(selectedFiles.files).findIndex(f => f.name === file.name);
+              if (index > -1) {
+                selectedFiles.items.remove(index);
+                elements.fileInput.files = selectedFiles.files;
+              }
+              if (elements.imageGrid.children.length > 0) {
+                elements.previewImage.src = elements.imageGrid.children[0].querySelector('img').src;
+              } else {
+                elements.previewImage.src = 'https://via.placeholder.com/600x300';
+              }
+            });
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+      elements.fileInput.files = selectedFiles.files; // Cập nhật fileInput
+      console.log('Tổng số file sau khi xử lý:', selectedFiles.files.length);
     }
-  });
 
-  // Xử lý tags
-  const tagsInput = document.querySelector('.tags-input input');
-  const tagsContainer = document.querySelector('.tags-input');
-  let tags = [];
-
-  tagsInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && tagsInput.value) {
-      const tag = document.createElement('div');
-      tag.className = 'tag';
-      tag.innerHTML = `${tagsInput.value} <i class="fas fa-times"></i>`;
-      tagsContainer.insertBefore(tag, tagsInput);
-      tags.push(tagsInput.value);
-      tagsInput.value = '';
-      updateTagsField();
-    }
-  });
-
-  tagsContainer.addEventListener('click', (e) => {
-    if (e.target.classList.contains('fa-times')) {
-      const tagText = e.target.parentElement.textContent.trim().split(' ')[0];
-      tags = tags.filter(t => t !== tagText);
-      e.target.parentElement.remove();
-      updateTagsField();
-    }
-  });
-
-  function updateTagsField() {
-    const hiddenTagsInput = document.createElement('input');
-    hiddenTagsInput.type = 'hidden';
-    hiddenTagsInput.name = 'tags';
-    hiddenTagsInput.value = tags.join(',');
-    tagsContainer.appendChild(hiddenTagsInput);
-  }
-
-  // Cập nhật preview khi nhập tiêu đề
-  const titleInput = document.getElementById('title');
-  const previewTitle = document.querySelector('.preview-title');
-  titleInput.addEventListener('input', (e) => {
-    previewTitle.textContent = e.target.value || 'Tiêu đề bài viết của bạn sẽ hiển thị ở đây';
-  });
-
-  // Đồng bộ nội dung editor với input hidden
-  const editor = document.getElementById('editor');
-  const noiDungHidden = document.getElementById('noiDungHidden');
-  editor.addEventListener('input', () => {
-    noiDungHidden.value = editor.innerHTML;
-  });
-
-  // Chọn template
-  const templateItems = document.querySelectorAll('.template-item');
-  templateItems.forEach(item => {
-    item.addEventListener('click', () => {
-      templateItems.forEach(i => i.classList.remove('active'));
-      item.classList.add('active');
+    elements.imageUpload.addEventListener('click', () => elements.fileInput.click());
+    elements.fileInput.addEventListener('change', (e) => {
+      console.log('Số file chọn:', e.target.files.length);
+      handleImageUpload(e.target.files);
     });
-  });
 
-  // Chuyển đổi preview mode
-  const previewBtns = document.querySelectorAll('.preview-btn');
-  const previewFrame = document.querySelector('.preview-frame');
-  previewBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      previewBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      if (btn.textContent.includes('Mobile')) {
-        previewFrame.style.maxWidth = '375px';
-      } else if (btn.textContent.includes('Tablet')) {
-        previewFrame.style.maxWidth = '768px';
-      } else {
-        previewFrame.style.maxWidth = '100%';
+    elements.imageUpload.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      elements.imageUpload.style.borderColor = '#2196F3';
+      elements.imageUpload.style.backgroundColor = '#f0f8ff';
+    });
+    elements.imageUpload.addEventListener('dragleave', (e) => {
+      e.preventDefault();
+      elements.imageUpload.style.borderColor = '#ccc';
+      elements.imageUpload.style.backgroundColor = 'transparent';
+    });
+    elements.imageUpload.addEventListener('drop', (e) => {
+      e.preventDefault();
+      elements.imageUpload.style.borderColor = '#ccc';
+      elements.imageUpload.style.backgroundColor = 'transparent';
+      const files = e.dataTransfer.files;
+      console.log('Số file kéo thả:', files.length);
+      handleImageUpload(files);
+    });
+
+    elements.titleInput.addEventListener('input', () => {
+      elements.previewTitle.textContent = elements.titleInput.value || 'Tiêu đề bài viết của bạn sẽ hiển thị ở đây';
+    });
+
+    elements.editor.addEventListener('input', () => {
+      elements.noiDungHidden.value = elements.editor.innerHTML;
+    });
+    elements.noiDungHidden.value = elements.editor.innerHTML || '';
+
+    function updateTags() {
+      elements.tagsHidden.value = tags.join(',');
+    }
+
+    elements.tagInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && elements.tagInput.value.trim()) {
+        const tagValue = elements.tagInput.value.trim();
+        if (!tags.includes(tagValue)) {
+          tags.push(tagValue);
+          const tag = document.createElement('div');
+          tag.className = 'tag';
+          tag.innerHTML = `${tagValue} <i class="fas fa-times"></i>`;
+          elements.tagsContainer.insertBefore(tag, elements.tagInput);
+          elements.tagInput.value = '';
+          updateTags();
+        }
       }
     });
-  });
+
+    elements.tagsContainer.addEventListener('click', (e) => {
+      if (e.target.classList.contains('fa-times')) {
+        const tagText = e.target.parentElement.textContent.trim().split(' ')[0];
+        tags = tags.filter(t => t !== tagText);
+        e.target.parentElement.remove();
+        updateTags();
+      }
+    });
+
+    elements.templateItems.forEach(item => {
+      item.addEventListener('click', () => {
+        elements.templateItems.forEach(i => i.classList.remove('active'));
+        item.classList.add('active');
+      });
+    });
+
+    elements.previewBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        elements.previewBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        elements.previewFrame.style.maxWidth = btn.textContent.includes('Mobile') ? '375px' :
+                btn.textContent.includes('Tablet') ? '768px' : '100%';
+      });
+    });
+
+    document.querySelector('.upload-form').addEventListener('submit', () => {
+      console.log('Số file gửi lên server:', elements.fileInput.files.length);
+    });
+  })();
 </script>
 </body>
 </html>
