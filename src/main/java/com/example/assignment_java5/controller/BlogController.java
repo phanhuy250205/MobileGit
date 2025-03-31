@@ -41,6 +41,11 @@ public class BlogController {
         blogDTO.setNhanVienId(blog.getNhanVien().getId());
         blogDTO.setAnhDaiDien(blog.getAnhDaiDien());
         blogDTO.setTags(blog.getTags());
+        nhanvien nv = blog.getNhanVien();
+        if (nv != null) {
+            blogDTO.setNhanVienTen(nv.getTenNhanVien());
+            blogDTO.setNhanVienAvatar(nv.getAvatar());
+        }
         // Thêm danh sách ảnh
         List<com.example.assignment_java5.model.BlogImage> images = blogImageService.findByBlogId(blog.getId());
         blogDTO.setImages(images);
@@ -173,5 +178,15 @@ public class BlogController {
         List<BlogDTO> blogDTOs = blogs.stream().map(this::convertToDTO).collect(Collectors.toList());
         model.addAttribute("blogs", blogDTOs);
         return "blog-list";
+    }
+    @GetMapping("/detail/{id}")
+    public  String getBlogDetail(@PathVariable Long id , Model  model){
+        blog Blog = blogService.findById(id);
+        if (Blog == null){
+            return "redirect:/blogs/list";
+        }
+        BlogDTO blogDTO = convertToDTO(Blog);
+        model.addAttribute("blog", blogDTO);
+        return "blogdetail";
     }
 }

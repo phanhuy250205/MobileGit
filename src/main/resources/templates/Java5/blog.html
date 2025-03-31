@@ -43,7 +43,7 @@
                 <img th:src="${blog.anhDaiDien != null ? blog.anhDaiDien : 'https://via.placeholder.com/800x400'}"
                      th:alt="${blog.tieuDe}">
                 <div class="post-content">
-                    <h2 th:text="${blog.tieuDe}"></h2>
+                    <a th:href="@{'/blogs/detail/' + ${blog.id}}" th:text="${blog.tieuDe}" class="blog-title"></a>
                     <div class="post-meta">
                         <span><i class="fas fa-user"></i> <span th:text="${blog.nhanVienId}"></span></span> <!-- Hiển thị ID nhân viên, thay bằng tên nếu cần -->
                         <span><i class="fas fa-calendar"></i> <span th:text="${#temporals.format(blog.ngayTao, 'dd/MM/yyyy')}"></span></span>

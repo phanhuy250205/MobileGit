@@ -13,9 +13,11 @@ public class BlogDTO {
     private LocalDateTime ngayCapNhat;
     private String trangThai;
     private Long nhanVienId;
+    private String nhanVienTen;    // Thêm trường tên nhân viên
+    private String nhanVienAvatar; // Thêm trường avatar nhân viên
     private String anhDaiDien;
     private String tags;
-    private List<BlogImage> images; // Thêm danh sách ảnh
+    private List<BlogImage> images; // Danh sách ảnh
 
     // Getters và Setters
     public Long getId() { return id; }
@@ -32,6 +34,10 @@ public class BlogDTO {
     public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
     public Long getNhanVienId() { return nhanVienId; }
     public void setNhanVienId(Long nhanVienId) { this.nhanVienId = nhanVienId; }
+    public String getNhanVienTen() { return nhanVienTen; }
+    public void setNhanVienTen(String nhanVienTen) { this.nhanVienTen = nhanVienTen; }
+    public String getNhanVienAvatar() { return nhanVienAvatar; }
+    public void setNhanVienAvatar(String nhanVienAvatar) { this.nhanVienAvatar = nhanVienAvatar; }
     public String getAnhDaiDien() { return anhDaiDien; }
     public void setAnhDaiDien(String anhDaiDien) { this.anhDaiDien = anhDaiDien; }
     public String getTags() { return tags; }
